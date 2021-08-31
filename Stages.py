@@ -60,6 +60,18 @@ class Reverse(Stage):
 
 class CaesarShift(Stage):
     name = "Caesar shift"
+    shift = 1
+    def process(self, text):
+        shifted = ""
+        for letter in text:
+            if letter.upper() in constants.alphabet:
+                if letter == letter.upper():
+                    shifted += constants.alphabet[((constants.alphabet.index(letter)+self.shift+1)%26)-1]
+                else:
+                    shifted += constants.alphabet[((constants.alphabet.index(letter.upper())+self.shift+1)%26)-1].lower()
+            else:
+                shifted += letter
+        return shifted
 class Substitution(Stage):
     name = "Substitution"
 class Affine(Stage):
