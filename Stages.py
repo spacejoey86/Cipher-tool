@@ -1,4 +1,5 @@
 import tkinter as tk
+import constants
 
 class Stage:
     name = "stage name"
@@ -36,10 +37,26 @@ class Capitalise(Stage):
     name = "Capitalise"
     def process(self, text):
         return text.upper()
+class Strip(Stage):
+    name = "Strip punctuation"
+    def process(self, text):
+        stripped = ""
+        for character in text:
+            if character.upper() in constants.alphabet or character == " ":
+                stripped += character
+        return stripped
 class RemoveSpaces(Stage):
     name = "Remove Spaces"
+    def process(self, text):
+        removed = ""
+        for character in text:
+            if character != " ":
+                removed += character
+        return removed
 class Reverse(Stage):
     name = "Reverse"
+    def process(self, text):
+        return text.rstrip("\n")[::-1]
 
 class CaesarShift(Stage):
     name = "Caesar shift"
