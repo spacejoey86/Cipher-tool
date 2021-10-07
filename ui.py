@@ -84,6 +84,7 @@ file_menu.add_command(label="Copy output")
 menu.add_cascade(label="File", menu = file_menu)
 ana_menu = tk.Menu(menu, tearoff=0)#Menu to toggle the stastical analysis shown at the bottom of display boxes
 ana_menu.add_command(label="Length", command=lambda:addStage(Length(stage_editor, updateOutputText)))
+ana_menu.add_command(label="Playfair", command=lambda:addStage(PlayfairDetect(stage_editor, updateOutputText)))
 ana_menu.add_checkbutton(label="Frequency analysis")
 ana_menu.add_checkbutton(label="Index of Coincidence")
 ana_menu.add_checkbutton(label="Bigrams")
