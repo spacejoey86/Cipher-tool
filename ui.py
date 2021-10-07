@@ -105,3 +105,5 @@ menu.add_cascade(label="Solve stage", menu=solve_menu)
 root.config(menu=menu)
 
 addStage(Input(stage_editor, updateOutputText))
+
+root.mainloop()
