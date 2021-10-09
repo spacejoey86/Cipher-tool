@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import filedialog
+import os
 from Stages import *
 from Analysis_stages import *
 
@@ -75,12 +77,38 @@ tk.Grid.rowconfigure(root, 1, weight=1)
 #tk.Grid.columnconfigure(stage_editor, 0, weight=1)
 #tk.Grid.rowconfigure(stage_editor, 0, weight=1)
 
+def openCom():
+    text = ""
+    try:
+        with filedialog.askopenfile() as file:
+            for line in file:
+                text += line
+        stages[0].textbox.delete(1.0, tk.END)
+        stages[0].textbox.insert(tk.END,text)
+    except AttributeError:#Catch error if the user cancels the dialog
+        pass
+def saveCom():
+    text = ""
+    for stage in stages:
+        text = stage.process(text)
+    try:
+        with filedialog.asksaveasfile() as file:
+            file.write(text)
+    except AttributeError:
+        pass
+def copyCom():
+    text = ""
+    for stage in stages:
+        text = stage.process(text)
+    root.clipboard_clear()
+    root.clipboard_append(text)
+    root.update()
 menu = tk.Menu(root)
 file_menu = tk.Menu(menu, tearoff=0)
-file_menu.add_command(label="Open")
-file_menu.add_command(label="Clear")
-file_menu.add_command(label="Save")
-file_menu.add_command(label="Copy output")
+file_menu.add_command(label="Open", command=openCom)
+file_menu.add_command(label="Clear", command = lambda:stages[0].textbox.delete(1.0, tk.END))
+file_menu.add_command(label="Save", command=saveCom)
+file_menu.add_command(label="Copy output", command=copyCom)
 menu.add_cascade(label="File", menu = file_menu)
 ana_menu = tk.Menu(menu, tearoff=0)#Menu to toggle the stastical analysis shown at the bottom of display boxes
 ana_menu.add_command(label="Length", command=lambda:addStage(Length(stage_editor, updateOutputText)))
