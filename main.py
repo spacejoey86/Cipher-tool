@@ -75,13 +75,21 @@ def updateStagesFrame():
         stage = stages[stage_index]
         stage.button = tk.Radiobutton(stages_frame, text=stage.name, variable = selected_stage, value = stage_index, command=updateStageEditor,
                                       indicatoron = 0, width = 20, takefocus=0)
-        stage.button.grid()
+        stage.check_var = tk.BooleanVar()
+        stage.check_var.set(True)
+        stage.checkbox = tk.Checkbutton(stages_frame, variable = stage.check_var, command=updateOutputText)
+        
+        if stage_index == 0: #Input cannot be disabled, so don't show the checkbox
+            stage.checkbox.config(state="disabled")
+        stage.button.grid(column=1, row=stage_index)
+        stage.checkbox.grid(column=0, row=stage_index)
 updateStagesFrame()
 
 def updateOutputText():
     text = ""
     for stage in stages:
-        text = stage.process(text)
+        if stage.check_var.get():
+            text = stage.process(text)
     right_text.delete(1.0, tk.END)
     right_text.insert(tk.END,text)
 right_text = tk.Text(root, takefocus=0)
