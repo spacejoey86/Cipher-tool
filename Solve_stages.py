@@ -23,17 +23,17 @@ class CaesarShift(Stage):
         self.decode_var.set(-1)
         self.frame = frame
     def display(self):
-        self.decode.grid(row=0, column=1, sticky="EN", padx=25)
-        self.encode.grid(row=0, column=2, sticky="WN", padx=25)
-        self.down_button.grid(row=1, column=0, sticky="NE")
+        self.decode.grid(row=0, column=1, sticky="NW", padx=25)
+        self.encode.grid(row=0, column=2, sticky="NW", padx=25)
+        self.down_button.grid(row=1, column=0, sticky="NW")
         self.scale.grid(row=1, column=1, columnspan=2, sticky="NEW")
         self.up_button.grid(row=1, column=3, sticky="NW")
-        tk.Grid.rowconfigure(self.frame, 0, weight=1)
-        tk.Grid.rowconfigure(self.frame, 1, weight=1)
-        tk.Grid.columnconfigure(self.frame, 0, weight=1)
-        tk.Grid.columnconfigure(self.frame, 1, weight=1)
-        tk.Grid.columnconfigure(self.frame, 2, weight=1)
-        tk.Grid.columnconfigure(self.frame, 3, weight=1)
+        tk.Grid.rowconfigure(self.frame, 0, weight=0)
+        #tk.Grid.rowconfigure(self.frame, 1, weight=0)
+        tk.Grid.columnconfigure(self.frame, 0, weight=0)
+        #tk.Grid.columnconfigure(self.frame, 1, weight=0)
+        #tk.Grid.columnconfigure(self.frame, 2, weight=1)
+        #tk.Grid.columnconfigure(self.frame, 3, weight=1)
     def process(self, text):
         shifted = ""
         for letter in text:
@@ -270,8 +270,8 @@ class Transposition(Stage):
         self.outLabel.grid(row=2,column=0)
         self.outCol.grid(row=2,column=1)
         self.outRow.grid(row=2, column=2)
-        self.scroll.grid(row=3,column=0,sticky=tk.N+tk.S+tk.E)
-        self.tree.grid(row=3,column=1,columnspan=2,sticky=tk.W)
+        self.scroll.grid(row=3,column=0,sticky="NSE")
+        self.tree.grid(row=3,column=1,columnspan=2,sticky="ESW")
         self.tree.bind("<ButtonPress-1>", self.bDown)
         self.tree.bind("<ButtonRelease-1>",self.bUp)
         self.tree.bind("<Motion>",self.bMotion)

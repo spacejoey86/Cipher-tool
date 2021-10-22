@@ -10,7 +10,7 @@ class Length(Stage):
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
     def display(self):
-        self.output.grid()
+        self.output.grid(sticky="NW")
     def process(self, text):
         self.output.configure(text="Length = " + str(len(text)))
         return text
@@ -22,7 +22,7 @@ class PlayfairDetect(Stage):
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
     def display(self):
-        self.output.grid()
+        self.output.grid(sticky="NW")
     def process(self, text):
         doubles = False
         for i in range(len(text)//2):
@@ -42,7 +42,7 @@ class FrequencyAnalyse(Stage):
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
     def display(self):
-        self.output.grid()
+        self.output.grid(sticky="NW")
     def process(self, text):
         frequency = {}
         for letter in set(text):
@@ -58,6 +58,9 @@ class Doubles(Stage):
         self.frame = frame
         self.updateFunction = updateFunction
         self.frame2 = tk.Frame(frame)
+        self.frame2.rowconfigure(0, weight=1)
+        self.frame2.columnconfigure(0, weight=1)
+        self.frame2.columnconfigure(1, weight=1)
         self.canvas = tk.Canvas(self.frame2)
         self.scroll = tk.Scrollbar(self.frame2, orient="vertical", command=self.canvas.yview)
         self.output = tk.Label(self.canvas, text="")
@@ -65,9 +68,9 @@ class Doubles(Stage):
         self.canvas.create_window((0, 0), window=self.output, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scroll.set)
     def display(self):
-        self.frame2.grid()
-        self.canvas.grid()
-        self.scroll.grid()
+        self.frame2.grid(sticky="NSW")
+        self.canvas.grid(sticky="NS")
+        self.scroll.grid(sticky="NS", column=1, row=0)
     def process(self, text):
         frequency = {}
         for letter in set(text[i]+text[i+1] for i in range(len(text)-1)):

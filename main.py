@@ -6,14 +6,17 @@ from Analysis_stages import *
 
 root = tk.Tk()
 root.title("Cipher program")
+root.geometry("1500x500")
+root.state("zoomed") #apparently windows only
 
 def updateStageEditor():
     for child in stage_editor.winfo_children():
         child.grid_forget()
     stages[selected_stage.get()].display()
     root.focus_set()
-stage_editor = tk.Frame(root)
+stage_editor = tk.Frame(root, width=10, height=10)#Size is the same as right_text, they will expand equally to fill the space
 stage_editor.grid(row=0, column=0, rowspan=2, sticky="NESW")
+stage_editor.grid_propagate(0) #stops the contents of the window affecting the size
 
 stages = []
 def addStage(stage):
@@ -92,15 +95,18 @@ def updateOutputText():
             text = stage.process(text)
     right_text.delete(1.0, tk.END)
     right_text.insert(tk.END,text)
-right_text = tk.Text(root, takefocus=0)
+right_text = tk.Text(root, takefocus=0, width=10, height=10)
 right_text.grid(row=0, column=4, rowspan=2, sticky="NESW")
 
 tk.Grid.columnconfigure(root, 0, weight=1)
+tk.Grid.columnconfigure(root, 1, weight=0)
+tk.Grid.columnconfigure(root, 2, weight=0)
+tk.Grid.columnconfigure(root, 3, weight=0)
 tk.Grid.columnconfigure(root, 4, weight=1)
 tk.Grid.rowconfigure(root, 0, weight=1)
-tk.Grid.rowconfigure(root, 1, weight=1)
-#tk.Grid.columnconfigure(stage_editor, 0, weight=1)
-#tk.Grid.rowconfigure(stage_editor, 0, weight=1)
+tk.Grid.rowconfigure(root, 1, weight=0)
+tk.Grid.columnconfigure(stage_editor, 0, weight=1)
+tk.Grid.rowconfigure(stage_editor, 0, weight=1)
 
 def openCom():
     text = ""
