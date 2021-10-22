@@ -80,7 +80,7 @@ def updateStagesFrame():
                                       indicatoron = 0, width = 20, takefocus=0)
         stage.check_var = tk.BooleanVar()
         stage.check_var.set(True)
-        stage.checkbox = tk.Checkbutton(stages_frame, variable = stage.check_var, command=updateOutputText)
+        stage.checkbox = tk.Checkbutton(stages_frame, variable = stage.check_var, command=updateOutputText, takefocus=0)
         
         if stage_index == 0: #Input cannot be disabled, so don't show the checkbox
             stage.checkbox.config(state="disabled")
