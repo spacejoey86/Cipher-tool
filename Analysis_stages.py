@@ -1,6 +1,6 @@
 import tkinter as tk
-import constants
-from Stages import Stage
+import Constants
+from Constants import Stage
 
 class Length(Stage):
     name = "Length"

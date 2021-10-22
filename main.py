@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 from Stages import *
+from Text_stages import *
 from Analysis_stages import *
 
 root = tk.Tk()
