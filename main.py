@@ -51,6 +51,23 @@ stage_up_button.grid(row=1, column=1, sticky="ESW")
 stage_delete_button.grid(row=1,column=2, sticky="ESW")
 stage_down_button.grid(row=1, column=3, sticky="ESW")
 
+#Shortcuts for selecting the next and previous stage
+def stageSelectUp(event):
+    if selected_stage.get() > 0:
+        selected_stage.set(selected_stage.get()-1)
+    updateStagesFrame()
+    updateStageEditor()
+def stageSelectDown(event):
+    if selected_stage.get() < len(stages) - 1:
+        selected_stage.set(selected_stage.get()+1)
+    updateStagesFrame()
+    updateStageEditor()
+root.bind("<Control-Tab>", stageSelectUp)
+root.bind("<Control-Shift-Tab>", stageSelectDown)
+root.bind("<Control-Prior>", stageSelectUp)     #Control + page up
+root.bind("<Control-Next>", stageSelectDown)    #Control + page down
+
+
 def updateStagesFrame():
     for button in stages_frame.winfo_children():
         button.destroy()
