@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-import os
 from Solve_stages import *
 from Text_stages import *
 from Analysis_stages import *
