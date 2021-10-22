@@ -88,6 +88,14 @@ def openCom():
         stages[0].textbox.insert(tk.END,text)
     except AttributeError:#Catch error if the user cancels the dialog
         pass
+def clearCom():
+    global stages
+    stages[0].textbox.delete(1.0, tk.END)
+    stages = [stages[0]]
+    selected_stage.set(0)
+    updateStageEditor()
+    updateStagesFrame()
+    #updateOutputText()
 def saveCom():
     text = ""
     for stage in stages:
@@ -107,7 +115,7 @@ def copyCom():
 menu = tk.Menu(root)
 file_menu = tk.Menu(menu, tearoff=0)
 file_menu.add_command(label="Open", command=openCom)
-file_menu.add_command(label="Clear", command = lambda:stages[0].textbox.delete(1.0, tk.END))
+file_menu.add_command(label="Clear", command = clearCom)
 file_menu.add_command(label="Save", command=saveCom)
 file_menu.add_command(label="Copy output", command=copyCom)
 menu.add_cascade(label="File", menu = file_menu)
