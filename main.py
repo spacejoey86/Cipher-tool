@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import os
-from Stages import *
+from Solve_stages import *
 from Text_stages import *
 from Analysis_stages import *
 
@@ -125,6 +125,7 @@ text_menu.add_command(label="Swap case", command=lambda:addStage(Swapcase(stage_
 text_menu.add_command(label="Strip punctuation", command=lambda:addStage(Strip(stage_editor, updateOutputText)))
 text_menu.add_command(label="Remove spaces", command=lambda:addStage(RemoveSpaces(stage_editor, updateOutputText)))
 text_menu.add_command(label="Reverse", command=lambda:addStage(Reverse(stage_editor, updateOutputText)))
+text_menu.add_command(label="Blank", command=lambda:addStage(Blank(stage_editor, updateOutputText)))
 menu.add_cascade(label="Text stage", menu=text_menu)
 solve_menu = tk.Menu(menu, tearoff=0)
 solve_menu.add_command(label="Caesar Shift", command=lambda:addStage(CaesarShift(stage_editor, updateOutputText)))

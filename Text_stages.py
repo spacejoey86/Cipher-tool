@@ -44,7 +44,7 @@ class Strip(Stage):
     def process(self, text):
         stripped = ""
         for character in text:
-            if character.upper() in constants.alphabet or character == " ":
+            if character.upper() in Constants.alphabet or character == " ":
                 stripped += character
         return stripped
 class RemoveSpaces(Stage):
@@ -59,3 +59,13 @@ class Reverse(Stage):
     name = "Reverse"
     def process(self, text):
         return text.rstrip("\n")[::-1]
+class Blank(Stage):
+    name = "Blank"
+    def process(self, text):
+        blanked = ""
+        for character in text:
+            if character.upper() == character:
+                blanked += " "
+            else:
+                blanked += character
+        return blanked

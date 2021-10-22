@@ -37,11 +37,11 @@ class CaesarShift(Stage):
     def process(self, text):
         shifted = ""
         for letter in text:
-            if letter.upper() in constants.alphabet:
+            if letter.upper() in Constants.alphabet:
                 if letter == letter.upper():
-                    shifted += constants.alphabet[((constants.alphabet.index(letter)+self.decode_var.get()*self.scale.get()+1)%26)-1]
+                    shifted += Constants.alphabet[((Constants.alphabet.index(letter)+self.decode_var.get()*self.scale.get()+1)%26)-1]
                 else:
-                    shifted += constants.alphabet[((constants.alphabet.index(letter.upper())+self.decode_var.get()*self.scale.get()+1)%26)-1].lower()
+                    shifted += Constants.alphabet[((Constants.alphabet.index(letter.upper())+self.decode_var.get()*self.scale.get()+1)%26)-1].lower()
             else:
                 shifted += letter
         return shifted
@@ -73,7 +73,7 @@ class Substitution(Stage):
         elif s2 in self.substitutions.values():
             print(s2," has already been found")
             self.sub_button.bell(displayof=0)
-        elif s1 not in constants.alphabet + [x.lower() for x in constants.alphabet]:
+        elif s1 not in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
             print("Only substitutions in the alphabet are allowed")
             self.sub_button.bell(displayof=0)
         elif len(s1) != 1 or len(s2) != 1:
@@ -96,7 +96,7 @@ class Substitution(Stage):
         self.displaySubs()
     def displaySubs(self):
         display_text = ""
-        for letter in constants.alphabet + [x.lower() for x in constants.alphabet]:
+        for letter in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
             if letter in self.substitutions.keys():
                 display_text = display_text + letter + " -> " + self.substitutions[letter] + "\n"
         self.sub_display.configure(text=display_text)
@@ -168,9 +168,9 @@ class Affine(Stage):
         else:
             self.aScale.set(self.aScale.get()+1)
     def update(self, args):
-        self.a = constants.a_values[self.aScale.get()-1]
+        self.a = Constants.a_values[self.aScale.get()-1]
         self.aLabel.config(text=self.a)
-        self.ia = constants.inverses[self.a]
+        self.ia = Constants.inverses[self.a]
         self.b = self.bScale.get()
         self.bLabel.config(text=self.b)
         self.updateFunction()
@@ -180,14 +180,14 @@ class Affine(Stage):
     def process(self, text):
         inputText = text
         if self.decode_var.get():
-            for letter in constants.alphabet:
-                lNum = constants.alphabet.index(letter)
-                rNum = constants.alphabet[((self.ia*(lNum-self.b))%26)].lower()
+            for letter in Constants.alphabet:
+                lNum = Constants.alphabet.index(letter)
+                rNum = Constants.alphabet[((self.ia*(lNum-self.b))%26)].lower()
                 inputText = inputText.replace(letter,rNum)
         else:
-            for letter in constants.alphabet:
-                lNum = constants.alphabet.index(letter)
-                rNum = constants.alphabet[((self.a*lNum+self.b)%26)].upper()
+            for letter in Constants.alphabet:
+                lNum = Constants.alphabet.index(letter)
+                rNum = Constants.alphabet[((self.a*lNum+self.b)%26)].upper()
                 inputText = inputText.replace(letter.lower(),rNum)
         return inputText
 class Vigenere(Stage):
@@ -215,11 +215,11 @@ class Vigenere(Stage):
         if len(self.keyVar.get()) == 0:
             return text
         for letter in text:
-            if letter.upper() in constants.alphabet:
-                if self.keyVar.get()[i%len(self.keyVar.get())].upper() in constants.alphabet:
-                    knum = constants.alphabet.index(self.keyVar.get()[i % len(self.keyVar.get())].upper())
-                    lnum = constants.alphabet.index(letter.upper())
-                    newLetter = constants.alphabet[((lnum - (knum*self.decode_var.get())))%26]
+            if letter.upper() in Constants.alphabet:
+                if self.keyVar.get()[i%len(self.keyVar.get())].upper() in Constants.alphabet:
+                    knum = Constants.alphabet.index(self.keyVar.get()[i % len(self.keyVar.get())].upper())
+                    lnum = Constants.alphabet.index(letter.upper())
+                    newLetter = Constants.alphabet[((lnum - (knum*self.decode_var.get())))%26]
                     if letter.upper() == letter:
                         outputText += newLetter.lower()
                     else:
