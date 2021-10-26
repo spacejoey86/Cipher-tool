@@ -156,6 +156,7 @@ ana_menu.add_command(label="Frequency analysis", command=lambda:addStage(Frequen
 #ana_menu.add_checkbutton(label="Index of Coincidence")
 ana_menu.add_command(label="Bigram frequencies", command=lambda:addStage(Doubles(stage_editor, updateOutputText)))
 ana_menu.add_command(label="Word finder", command=lambda:addStage(WordFinder(stage_editor, updateOutputText)))
+ana_menu.add_command(label="Vigenere keyword length", command=lambda:addStage(VigenereKeyword(stage_editor, updateOutputText)))
 menu.add_cascade(label="Analyse", menu=ana_menu)
 text_menu = tk.Menu(menu, tearoff=0)
 text_menu.add_command(label="Capitalise", command=lambda:addStage(Capitalise(stage_editor, updateOutputText)))

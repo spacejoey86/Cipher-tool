@@ -34,6 +34,46 @@ class PlayfairDetect(Stage):
         else:
             self.output.configure(text="Doubles not found, this could be a Playfair cipher")
         return text
+class VigenereKeyword(Stage):
+    name = "Vigenere keyword length"
+    def __init__(self, frame, updateFunction):
+        self.frame = frame
+        self.updateFunction = updateFunction
+        self.input_var = tk.StringVar(value="20")
+        self.input = tk.Entry(frame, width=5, textvariable=self.input_var)
+        self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
+        #self.input.configure(text="20")
+        self.output = tk.Label(frame, text="")
+    def display(self):
+        self.input.grid(sticky="NW")
+        self.output.grid(sticky="NW")
+        self.frame.rowconfigure(0, weight=0)
+        self.frame.rowconfigure(1, weight=0)
+        self.frame.columnconfigure(0, weight=0)
+        self.frame.columnconfigure(1, weight=0)
+    def IC(self, text):
+        length = len(text)
+        frequency = {}
+        a = 0.0
+        for letter in Constants.alphabet:
+            frequency[letter] = text.count(letter)
+        for letter in Constants.alphabet:
+            a += frequency[letter] * (frequency[letter] - 1)
+        IC = a / (length * (length - 1))
+        return round(IC, 5)
+    def process(self, text):
+        if self.input.get().isnumeric():
+            outputText = ""
+            for currentKey in range(2, int(self.input.get()) + 1):
+                tempIC = []
+                for i in range(currentKey):
+                    tempText = []
+                    for letter in range(i, len(text), currentKey):
+                        tempText.append(text[letter])
+                    tempIC.append(self.IC(tempText))
+                outputText += str(currentKey) + " : " + str(round(sum(tempIC) / len(tempIC), 3)) + "\n"
+            self.output.configure(text=outputText)
+        return text
 class WordFinder(Stage):
     name = "Word Finder"
     output = None
