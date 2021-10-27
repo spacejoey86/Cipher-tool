@@ -88,11 +88,14 @@ def updateStagesFrame():
         stage.checkbox.grid(column=0, row=stage_index)
 updateStagesFrame()
 
-def updateOutputText():
+def getOutputText():
     text = ""
     for stage in stages:
         if stage.check_var.get():
             text = stage.process(text)
+    return text
+def updateOutputText():
+    text = getOutputText()
     right_text.delete(1.0, tk.END)
     right_text.insert(tk.END,text)
 right_text = tk.Text(root, takefocus=0, width=10, height=10)
@@ -127,9 +130,7 @@ def clearCom():
     updateStagesFrame()
     #updateOutputText()
 def saveCom():
-    text = ""
-    for stage in stages:
-        text = stage.process(text)
+    text = getOutputText()
     try:
         with filedialog.asksaveasfile() as file:
             file.write(text)
