@@ -22,12 +22,14 @@ stages = []
 def addStage(stage):
     stages.append(stage)
     updateStagesFrame()
-    stages[len(stages)-1].button.select()
+    stages[len(stages)-1].button.select() #select the newly added stage
     updateStageEditor()
     updateOutputText()
 selected_stage = tk.IntVar()
 stages_frame = tk.Frame(root)
 stages_frame.grid(row=0, column=1, sticky="NS", columnspan=3)
+
+#Up, Delete, and Down buttons
 def stageUp():
     if len(stages) > 1 and selected_stage.get() > 1:
         stages.insert(selected_stage.get()-1, stages.pop(selected_stage.get()))
@@ -108,6 +110,7 @@ tk.Grid.rowconfigure(root, 1, weight=0)
 tk.Grid.columnconfigure(stage_editor, 0, weight=1)
 tk.Grid.rowconfigure(stage_editor, 0, weight=1)
 
+#Functions for file menu operations:
 def openCom():
     text = ""
     try:
@@ -125,7 +128,6 @@ def clearCom():
     selected_stage.set(0)
     updateStageEditor()
     updateStagesFrame()
-    #updateOutputText()
 def saveCom():
     text = ""
     for stage in stages:
@@ -143,8 +145,11 @@ def copyCom():
     root.clipboard_append(text)
     root.update()
 
-def add(menu, stage):
-    menu.add_command(label= stage.name, command=lambda:addStage(stage(stage_editor, updateOutputText)))
+def add(menu, StageClass): #Helper function to make adding stages neater
+    menu.add_command(label= StageClass.name,#Takes the name from the class
+                     command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
+                                                        updateOutputText))) #and a callback for when things change and the output text needs updating
+
 menu = tk.Menu(root)
 file_menu = tk.Menu(menu, tearoff=0)
 file_menu.add_command(label="Open", command=openCom)
