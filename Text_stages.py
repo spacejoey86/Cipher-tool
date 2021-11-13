@@ -54,13 +54,3 @@ class Reverse(Stage):
     name = "Reverse"
     def process(self, text):
         return text.rstrip("\n")[::-1]
-class Blank(Stage):
-    name = "Blank"
-    def process(self, text):
-        blanked = ""
-        for character in text:
-            if character.upper() == character:
-                blanked += " "
-            else:
-                blanked += character
-        return blanked

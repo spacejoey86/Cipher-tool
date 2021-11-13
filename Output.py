@@ -31,3 +31,13 @@ class OutputHighlight(Stage):
         self.textBox.grid()
     def process(self, text):
         return text
+class Blank(Stage):
+    name = "Blank"
+    def process(self, text):
+        blanked = ""
+        for character in text:
+            if character.upper() == character:
+                blanked += " "
+            else:
+                blanked += character
+        return blanked

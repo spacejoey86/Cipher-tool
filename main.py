@@ -180,7 +180,6 @@ add(text_menu, Swapcase)
 add(text_menu, Strip)
 add(text_menu, RemoveSpaces)
 add(text_menu, Reverse)
-add(text_menu, Blank)
 menu.add_cascade(label="Text stage", menu=text_menu)
 
 solve_menu = tk.Menu(menu, tearoff=0)
@@ -194,6 +193,7 @@ menu.add_cascade(label="Solve stage", menu=solve_menu)
 
 output_menu = tk.Menu(menu, tearoff=0)
 add(output_menu, OutputHighlight)
+add(output_menu, Blank)
 right_text.tag_configure("highlight", foreground = "red")
 menu.add_cascade(label="Output", menu=output_menu)
 
