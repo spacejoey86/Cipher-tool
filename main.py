@@ -3,6 +3,7 @@ from tkinter import filedialog
 from Solve_stages import *
 from Text_stages import *
 from Analysis_stages import *
+from Output import *
 
 root = tk.Tk()
 root.title("Cipher program")
@@ -22,12 +23,14 @@ stages = []
 def addStage(stage):
     stages.append(stage)
     updateStagesFrame()
-    stages[len(stages)-1].button.select()
+    stages[len(stages)-1].button.select() #select the newly added stage
     updateStageEditor()
     updateOutputText()
 selected_stage = tk.IntVar()
 stages_frame = tk.Frame(root)
 stages_frame.grid(row=0, column=1, sticky="NS", columnspan=3)
+
+#Up, Delete, and Down buttons
 def stageUp():
     if len(stages) > 1 and selected_stage.get() > 1:
         stages.insert(selected_stage.get()-1, stages.pop(selected_stage.get()))
@@ -98,6 +101,9 @@ def updateOutputText():
     text = getOutputText()
     right_text.delete(1.0, tk.END)
     right_text.insert(tk.END,text)
+    for stage in stages:
+        if stage.check_var.get():
+            stage.updateOutputWidget(text, right_text)
 right_text = tk.Text(root, takefocus=0, width=10, height=10)
 right_text.grid(row=0, column=4, rowspan=2, sticky="NESW")
 
@@ -111,6 +117,7 @@ tk.Grid.rowconfigure(root, 1, weight=0)
 tk.Grid.columnconfigure(stage_editor, 0, weight=1)
 tk.Grid.rowconfigure(stage_editor, 0, weight=1)
 
+#Functions for file menu operations:
 def openCom():
     text = ""
     try:
@@ -128,7 +135,6 @@ def clearCom():
     selected_stage.set(0)
     updateStageEditor()
     updateStagesFrame()
-    #updateOutputText()
 def saveCom():
     text = getOutputText()
     try:
@@ -143,6 +149,12 @@ def copyCom():
     root.clipboard_clear()
     root.clipboard_append(text)
     root.update()
+
+def add(menu, StageClass): #Helper function to make adding stages neater
+    menu.add_command(label= StageClass.name,#Takes the name from the class
+                     command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
+                                                        updateOutputText))) #and a callback for when things change and the output text needs updating
+
 menu = tk.Menu(root)
 file_menu = tk.Menu(menu, tearoff=0)
 file_menu.add_command(label="Open", command=openCom)
@@ -150,31 +162,40 @@ file_menu.add_command(label="Clear", command = clearCom)
 file_menu.add_command(label="Save", command=saveCom)
 file_menu.add_command(label="Copy output", command=copyCom)
 menu.add_cascade(label="File", menu = file_menu)
-ana_menu = tk.Menu(menu, tearoff=0)#Menu to toggle the stastical analysis shown at the bottom of display boxes
-ana_menu.add_command(label="Length", command=lambda:addStage(Length(stage_editor, updateOutputText)))
-ana_menu.add_command(label="Playfair", command=lambda:addStage(PlayfairDetect(stage_editor, updateOutputText)))
-ana_menu.add_command(label="Frequency analysis", command=lambda:addStage(FrequencyAnalyse(stage_editor, updateOutputText)))
-#ana_menu.add_checkbutton(label="Index of Coincidence")
-ana_menu.add_command(label="Bigram frequencies", command=lambda:addStage(Doubles(stage_editor, updateOutputText)))
-ana_menu.add_command(label="Word finder", command=lambda:addStage(WordFinder(stage_editor, updateOutputText)))
-ana_menu.add_command(label="Vigenere keyword length", command=lambda:addStage(VigenereKeyword(stage_editor, updateOutputText)))
+
+ana_menu = tk.Menu(menu, tearoff=0)
+add(ana_menu, Length)
+add(ana_menu, PlayfairDetect)
+add(ana_menu, FrequencyAnalyse)
+add(ana_menu, Doubles)
+#add(ana_menu, IoC) #add index of coincedence here
+add(ana_menu, WordFinder)
+add(ana_menu, VigenereKeyword)
 menu.add_cascade(label="Analyse", menu=ana_menu)
+
 text_menu = tk.Menu(menu, tearoff=0)
-text_menu.add_command(label="Capitalise", command=lambda:addStage(Capitalise(stage_editor, updateOutputText)))
-text_menu.add_command(label="Lowercase", command=lambda:addStage(Lowercase(stage_editor, updateOutputText)))
-text_menu.add_command(label="Swap case", command=lambda:addStage(Swapcase(stage_editor, updateOutputText)))
-text_menu.add_command(label="Strip punctuation", command=lambda:addStage(Strip(stage_editor, updateOutputText)))
-text_menu.add_command(label="Remove spaces", command=lambda:addStage(RemoveSpaces(stage_editor, updateOutputText)))
-text_menu.add_command(label="Reverse", command=lambda:addStage(Reverse(stage_editor, updateOutputText)))
-text_menu.add_command(label="Blank", command=lambda:addStage(Blank(stage_editor, updateOutputText)))
+add(text_menu, Capitalise)
+add(text_menu, Lowercase)
+add(text_menu, Swapcase)
+add(text_menu, Strip)
+add(text_menu, RemoveSpaces)
+add(text_menu, Reverse)
+add(text_menu, Blank)
 menu.add_cascade(label="Text stage", menu=text_menu)
+
 solve_menu = tk.Menu(menu, tearoff=0)
-solve_menu.add_command(label="Caesar Shift", command=lambda:addStage(CaesarShift(stage_editor, updateOutputText)))
-solve_menu.add_command(label="Substitution", command=lambda:addStage(Substitution(stage_editor, updateOutputText)))
-solve_menu.add_command(label="Affine", command=lambda:addStage(Affine(stage_editor, updateOutputText)))
-solve_menu.add_command(label="Viginere", command=lambda:addStage(Vigenere(stage_editor, updateOutputText)))
-solve_menu.add_command(label="Transposition", command=lambda:addStage(Transposition(stage_editor, updateOutputText)))
+add(solve_menu, CaesarShift)
+add(solve_menu, Substitution)
+add(solve_menu, Affine)
+add(solve_menu, Vigenere)
+add(solve_menu, Transposition)
 menu.add_cascade(label="Solve stage", menu=solve_menu)
+
+output_menu = tk.Menu(menu, tearoff=0)
+add(output_menu, OutputHighlight)
+right_text.tag_configure("highlight", foreground = "red")
+menu.add_cascade(label="Output", menu=output_menu)
+
 root.config(menu=menu)
 
 addStage(Input(stage_editor, updateOutputText))

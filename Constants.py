@@ -12,3 +12,5 @@ class Stage:
         return text
     def display(self):
         pass
+    def updateOutputWidget(self, text, textRef): #called after all the text is processed, for changing text colours etc
+        pass
