@@ -22,11 +22,6 @@ class Input(Stage):
         tk.Grid.columnconfigure(self.frame, 0, weight=1)
     def process(self, text):
         return self.textbox.get("1.0",tk.END).rstrip("\n")
-class Output(Stage):
-    name = "Output"
-    def process(self, text):
-        print(text)
-    
 class Capitalise(Stage):
     name = "Capitalise"
     def process(self, text):

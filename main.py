@@ -3,6 +3,7 @@ from tkinter import filedialog
 from Solve_stages import *
 from Text_stages import *
 from Analysis_stages import *
+from Output import *
 
 root = tk.Tk()
 root.title("Cipher program")
@@ -97,6 +98,9 @@ def updateOutputText():
             text = stage.process(text)
     right_text.delete(1.0, tk.END)
     right_text.insert(tk.END,text)
+    for stage in stages:
+        if stage.check_var.get():
+            stage.updateOutputWidget(text, right_text)
 right_text = tk.Text(root, takefocus=0, width=10, height=10)
 right_text.grid(row=0, column=4, rowspan=2, sticky="NESW")
 
@@ -183,6 +187,11 @@ add(solve_menu, Affine)
 add(solve_menu, Vigenere)
 add(solve_menu, Transposition)
 menu.add_cascade(label="Solve stage", menu=solve_menu)
+
+output_menu = tk.Menu(menu, tearoff=0)
+add(output_menu, OutputHighlight)
+right_text.tag_configure("highlight", foreground = "red")
+menu.add_cascade(label="Output", menu=output_menu)
 
 root.config(menu=menu)
 
