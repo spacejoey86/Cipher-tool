@@ -58,70 +58,6 @@ class Morse(Stage):
         return "".join([self.morse_decode[letter] for letter in text.split(self.seperator)]).lower()
 class Substitution(Stage):
     name = "Substitution"
-##    substitutions = {}
-##    label_one = None
-##    sub_entry_one = None
-##    label_two = None
-##    sub_entry_two = None
-##    sub_button = None
-    
-##    label_three = None
-##    rev_entry_one = None
-##    label_four = None
-##    rev_entry_two = None
-##    rev_button = None
-    sub_display = None
-    def SE1S(self, event):#Functions to select the text in the entry widgets when they are tabbed to
-        self.sub_entry_one.selection_range(0, tk.END)
-    def SE2S(self, event):
-        self.sub_entry_two.selection_range(0, tk.END)
-    def substitute(self):
-        s1 = self.sub_entry_one.get()
-        s2 = self.sub_entry_two.get()
-        if s1 in self.substitutions.keys():
-            print(s1," has already been substituted")
-            self.sub_button.bell(displayof=0)
-        elif s2 in self.substitutions.values():
-            print(s2," has already been found")
-            self.sub_button.bell(displayof=0)
-        elif s1 not in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
-            print("Only substitutions in the alphabet are allowed")
-            self.sub_button.bell(displayof=0)
-        elif len(s1) != 1 or len(s2) != 1:
-            print("They must both be a single character")
-            self.sub_button.bell(displayof=0)
-        elif (s1 == s1.lower() and s2 == s2.lower()) or (s1 == s1.upper() and s2 == s2.upper()):
-            print("Must substitute to a different case")
-            self.sub_button.bell(displayof=0)
-        elif (len(self.substitutions.keys()) > 0 and list(self.substitutions.keys())[0] == list(self.substitutions.keys())[0].lower() and s1 == s1.upper()) or (len(self.substitutions.keys()) > 0 and list(self.substitutions.keys())[0] == list(self.substitutions.keys())[0].upper() and s1 == s1.lower()):
-            print("Substitions must all be one case")
-            self.sub_button.bell(displayof=0)
-        elif s1 == s2:
-            print("They can't be the same")
-            self.sub_button.bell(displayof=0)
-        else:
-            #print("Substituting ",s1," for ",s2)
-            #print("Found ",inputText.count(s1))
-            self.substitutions[s1] = s2
-            self.updateFunction()
-        self.displaySubs()
-    def displaySubs(self):
-        display_text = ""
-        for letter in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
-            if letter in self.substitutions.keys():
-                display_text = display_text + letter + " -> " + self.substitutions[letter] + "\n"
-        self.sub_display.configure(text=display_text)
-        self.updateFunction()
-    def unSubstitute(self):
-        s1 = self.sub_entry_one.get()
-        s2 = self.sub_entry_two.get()
-        if s1 == "":
-            self.substitutions = {key:val for key, val in self.substitutions.items() if val != s2}
-        elif s2 == "":
-            self.substitutions = {key:val for key, val in self.substitutions.items() if key != s1}
-        else:
-            self.substitutions = {key:val for key, val in self.substitutions.items() if (key != s1) or (val != s2)}
-        self.displaySubs()
     def __init__(self, frame, updateFunction):
         self.substitutions = {}
         self.label_one = tk.Label(frame, text="Substitute")
@@ -143,10 +79,58 @@ class Substitution(Stage):
         self.rev_button.grid(row=1,column=4, padx=10)
         self.sub_display.grid(row=0,column=5,rowspan=3)
     def process(self, text):
-        #text2 = ""
         for key, value in self.substitutions.items():
             text = text.replace(key,value)
         return text
+    def SE1S(self, event):#Functions to select the text in the entry widgets when they are tabbed to
+        self.sub_entry_one.selection_range(0, tk.END)
+    def SE2S(self, event):
+        self.sub_entry_two.selection_range(0, tk.END)
+    def substitute(self):
+        s1 = self.sub_entry_one.get()
+        s2 = self.sub_entry_two.get()
+        if s1 in self.substitutions.keys():
+            #s1 has already been substituted
+            self.sub_button.bell(displayof=0)
+##        elif s2 in self.substitutions.values():
+##            print(s2," has already been found")
+##            self.sub_button.bell(displayof=0)
+##        elif s1 not in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
+##            print("Only substitutions in the alphabet are allowed")
+##            self.sub_button.bell(displayof=0)
+        elif len(s1) != 1 or len(s2) != 1:
+            #They must both be a single character
+            self.sub_button.bell(displayof=0)
+##        elif (s1 == s1.lower() and s2 == s2.lower()) or (s1 == s1.upper() and s2 == s2.upper()):
+##            print("Must substitute to a different case")
+##            self.sub_button.bell(displayof=0)
+##        elif (len(self.substitutions.keys()) > 0 and list(self.substitutions.keys())[0] == list(self.substitutions.keys())[0].lower() and s1 == s1.upper()) or (len(self.substitutions.keys()) > 0 and list(self.substitutions.keys())[0] == list(self.substitutions.keys())[0].upper() and s1 == s1.lower()):
+##            print("Substitions must all be one case")
+##            self.sub_button.bell(displayof=0)
+        elif s1 == s2:
+            #They can't be the same
+            self.sub_button.bell(displayof=0)
+        else:
+            self.substitutions[s1] = s2
+            self.updateFunction()
+        self.displaySubs()
+    def displaySubs(self):
+        display_text = ""
+        for letter in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
+            if letter in self.substitutions.keys():
+                display_text = display_text + letter + " -> " + self.substitutions[letter] + "\n"
+        self.sub_display.configure(text=display_text)
+        self.updateFunction()
+    def unSubstitute(self):
+        s1 = self.sub_entry_one.get()
+        s2 = self.sub_entry_two.get()
+        if s1 == "":
+            self.substitutions = {key:val for key, val in self.substitutions.items() if val != s2}
+        elif s2 == "":
+            self.substitutions = {key:val for key, val in self.substitutions.items() if key != s1}
+        else:
+            self.substitutions = {key:val for key, val in self.substitutions.items() if (key != s1) or (val != s2)}
+        self.displaySubs()
 class Affine(Stage):
     name = "Affine"
     def __init__(self, frame, updateFunction):
