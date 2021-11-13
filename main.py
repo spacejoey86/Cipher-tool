@@ -104,8 +104,9 @@ def updateOutputText():
     for stage in stages:
         if stage.check_var.get():
             stage.updateOutputWidget(text, right_text)
-right_text = tk.Text(root, takefocus=0, width=10, height=10)
+right_text = tk.Text(root, takefocus=0, width=10, height=10, font=("Courier", 10))
 right_text.grid(row=0, column=4, rowspan=2, sticky="NESW")
+right_text.grid_propagate(0)
 
 tk.Grid.columnconfigure(root, 0, weight=1)
 tk.Grid.columnconfigure(root, 1, weight=0)
@@ -117,6 +118,11 @@ tk.Grid.rowconfigure(root, 1, weight=0)
 tk.Grid.columnconfigure(stage_editor, 0, weight=1)
 tk.Grid.rowconfigure(stage_editor, 0, weight=1)
 
+#==========
+def add(menu, StageClass): #Helper function to make adding stages neater
+    menu.add_command(label= StageClass.name,#Takes the name from the class
+                     command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
+                                                        updateOutputText))) #and a callback for when things change and the output text needs updating
 #Functions for file menu operations:
 def openCom():
     text = ""
@@ -150,10 +156,6 @@ def copyCom():
     root.clipboard_append(text)
     root.update()
 
-def add(menu, StageClass): #Helper function to make adding stages neater
-    menu.add_command(label= StageClass.name,#Takes the name from the class
-                     command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
-                                                        updateOutputText))) #and a callback for when things change and the output text needs updating
 
 menu = tk.Menu(root)
 file_menu = tk.Menu(menu, tearoff=0)
@@ -191,9 +193,17 @@ add(solve_menu, Transposition)
 add(solve_menu, Morse)
 menu.add_cascade(label="Solve stage", menu=solve_menu)
 
+#Functions for the output menu operations
+def changeFontSize(change):
+    currentSize = int(right_text.cget("font").split(" ")[1])
+    right_text.config(font=("Courier", currentSize + change))
+    stages[0].textbox.config(font=("Courier", currentSize + change))
 output_menu = tk.Menu(menu, tearoff=0)
 add(output_menu, OutputHighlight)
 add(output_menu, Blank)
+output_menu.add_command(label="Increase font size", command=lambda:changeFontSize(1))
+output_menu.add_command(label="Decrease font size", command=lambda:changeFontSize(-1))
+
 right_text.tag_configure("highlight", foreground = "red")
 menu.add_cascade(label="Output", menu=output_menu)
 
