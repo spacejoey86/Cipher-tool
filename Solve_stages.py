@@ -45,6 +45,17 @@ class CaesarShift(Stage):
             else:
                 shifted += letter
         return shifted
+class Morse(Stage):
+    name = "Morse code"
+    dot = "."
+    dash = "-"
+    seperator = " "
+    morse_encode = {'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----'}
+    morse_decode = {" ": "", "":""}
+    for key, value in morse_encode.items():
+        morse_decode[value] = key
+    def process(self, text):
+        return "".join([self.morse_decode[letter] for letter in text.split(self.seperator)]).lower()
 class Substitution(Stage):
     name = "Substitution"
 ##    substitutions = {}
