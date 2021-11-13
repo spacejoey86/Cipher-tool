@@ -114,11 +114,11 @@ class Substitution(Stage):
         s1 = self.sub_entry_one.get()
         s2 = self.sub_entry_two.get()
         if s1 == "":
-            self.substitutions = {key:val for key, val in self.substitutions.items() if val != s2}
+            self.substitutions = {key:val for key, val in self.substitutions.items() if val not in s2}
         elif s2 == "":
-            self.substitutions = {key:val for key, val in self.substitutions.items() if key != s1}
+            self.substitutions = {key:val for key, val in self.substitutions.items() if key not in s1}
         else:
-            self.substitutions = {key:val for key, val in self.substitutions.items() if (key != s1) or (val != s2)}
+            self.substitutions = {key:val for key, val in self.substitutions.items() if (key not in s1) or (val not in s2)}
         self.displaySubs()
 class Affine(Stage):
     name = "Affine"
