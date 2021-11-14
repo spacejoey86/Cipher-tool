@@ -11,7 +11,7 @@ class Length(Stage):
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def process(self, text):
+    def decode(self, text):
         self.output.configure(text="Length = " + str(len(text)))
         return text
 class PlayfairDetect(Stage):
@@ -23,7 +23,7 @@ class PlayfairDetect(Stage):
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def process(self, text):
+    def decode(self, text):
         doubles = False
         for i in range(len(text)//2):
             if text[i] == text[i+1]:
@@ -42,7 +42,6 @@ class VigenereKeyword(Stage):
         self.input_var = tk.StringVar(value="20")
         self.input = tk.Entry(frame, width=5, textvariable=self.input_var)
         self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
-        #self.input.configure(text="20")
         self.output = tk.Label(frame, text="")
     def display(self):
         self.input.grid(sticky="NW")
@@ -61,7 +60,7 @@ class VigenereKeyword(Stage):
             a += frequency[letter] * (frequency[letter] - 1)
         IC = a / (length * (length - 1))
         return round(IC, 5)
-    def process(self, text):
+    def decode(self, text):
         if self.input.get().isnumeric():
             outputText = ""
             for currentKey in range(2, int(self.input.get()) + 1):
@@ -111,8 +110,8 @@ class WordFinder(Stage):
                 else:
                     outputText.append(outputText[repeated])
         return outputText
-    def process(self, text):
-        #self.input needs to have repeated letters, else it will match everything
+    def decode(self, text):
+        #self.input needs to have repeated letters, else it will match everything. add status bar message
         matches = {}
         for index, letter in enumerate(text):
             testWord = ""
@@ -141,7 +140,7 @@ class FrequencyAnalyse(Stage):
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def process(self, text):
+    def decode(self, text):
         frequency = {}
         for letter in set(text):
             frequency[letter] = round(text.count(letter)/len(text)*100, 2)
@@ -169,7 +168,7 @@ class Doubles(Stage):
         self.frame2.grid(sticky="NSW")
         self.canvas.grid(sticky="NS")
         self.scroll.grid(sticky="NS", column=1, row=0)
-    def process(self, text):
+    def decode(self, text):
         frequency = {}
         for letter in set(text[i]+text[i+1] for i in range(len(text)-1)):
             frequency[letter] = round(text.count(letter)/len(text)*100, 2)

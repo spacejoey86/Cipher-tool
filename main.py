@@ -10,13 +10,30 @@ root.title("Cipher program")
 root.geometry("1500x500")
 root.state("zoomed") #apparently windows only
 
+def getOutputText():
+    text = ""
+    for stage in stages:
+        if stage.check_var.get():
+            if decode_var.get() == 1: #encode is selected
+                text = stage.encode(text)
+            else: #decode is selected
+                text = stage.decode(text)
+    return text
+def updateOutputText():
+    text = getOutputText()
+    right_text.delete(1.0, tk.END)
+    right_text.insert(tk.END,text)
+    for stage in stages:
+        if stage.check_var.get():
+            stage.updateOutputWidget(text, right_text)
+
 def updateStageEditor():
     for child in stage_editor.winfo_children():
         child.grid_forget()
     stages[selected_stage.get()].display()
     root.focus_set()
 stage_editor = tk.Frame(root, width=10, height=10)#Size is the same as right_text, they will expand equally to fill the space
-stage_editor.grid(row=0, column=0, rowspan=2, sticky="NESW")
+stage_editor.grid(row=0, column=0, rowspan=4, sticky="NESW")
 stage_editor.grid_propagate(0) #stops the contents of the window affecting the size
 
 stages = []
@@ -29,6 +46,14 @@ def addStage(stage):
 selected_stage = tk.IntVar()
 stages_frame = tk.Frame(root)
 stages_frame.grid(row=0, column=1, sticky="NS", columnspan=3)
+
+#Radiobuttons to select between encode and decode
+decode_var = tk.IntVar()
+decodeBox = tk.Radiobutton(root, text="Decode", variable=decode_var,value=-1,command=updateOutputText)
+encodeBox = tk.Radiobutton(root, text="Encode", variable=decode_var,value=1,command=updateOutputText)
+decode_var.set(-1) #set to decode as default
+decodeBox.grid(row=1,column=1,columnspan=3)
+encodeBox.grid(row=2,column=1,columnspan=3)
 
 #Up, Delete, and Down buttons
 def stageUp():
@@ -53,9 +78,9 @@ def deleteStage():
 stage_up_button = tk.Button(root, text = "↑",command=stageUp,takefocus=0)
 stage_delete_button = tk.Button(root, text = "×",command=deleteStage,takefocus=0)
 stage_down_button = tk.Button(root, text = "↓",command=stageDown,takefocus=0)
-stage_up_button.grid(row=1, column=1, sticky="ESW")
-stage_delete_button.grid(row=1,column=2, sticky="ESW")
-stage_down_button.grid(row=1, column=3, sticky="ESW")
+stage_up_button.grid(row=3, column=1, sticky="ESW")
+stage_delete_button.grid(row=3,column=2, sticky="ESW")
+stage_down_button.grid(row=3, column=3, sticky="ESW")
 
 #Shortcuts for selecting the next and previous stage
 def stageSelectUp(event):
@@ -91,21 +116,9 @@ def updateStagesFrame():
         stage.checkbox.grid(column=0, row=stage_index)
 updateStagesFrame()
 
-def getOutputText():
-    text = ""
-    for stage in stages:
-        if stage.check_var.get():
-            text = stage.process(text)
-    return text
-def updateOutputText():
-    text = getOutputText()
-    right_text.delete(1.0, tk.END)
-    right_text.insert(tk.END,text)
-    for stage in stages:
-        if stage.check_var.get():
-            stage.updateOutputWidget(text, right_text)
+
 right_text = tk.Text(root, takefocus=0, width=10, height=10, font=("Courier", 10))
-right_text.grid(row=0, column=4, rowspan=2, sticky="NESW")
+right_text.grid(row=0, column=4, rowspan=4, sticky="NESW")
 right_text.grid_propagate(0)
 
 tk.Grid.columnconfigure(root, 0, weight=1)
@@ -189,7 +202,7 @@ add(solve_menu, CaesarShift)
 add(solve_menu, Substitution)
 add(solve_menu, Affine)
 add(solve_menu, Vigenere)
-add(solve_menu, Transposition)
+#add(solve_menu, Transposition) #this one doesn't work
 add(solve_menu, Morse)
 menu.add_cascade(label="Solve stage", menu=solve_menu)
 

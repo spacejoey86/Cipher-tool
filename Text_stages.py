@@ -20,23 +20,23 @@ class Input(Stage):
         self.textbox.grid(sticky="NSEW")
         tk.Grid.rowconfigure(self.frame, 0, weight=1)
         tk.Grid.columnconfigure(self.frame, 0, weight=1)
-    def process(self, text):
+    def decode(self, text):
         return self.textbox.get("1.0",tk.END).rstrip("\n")
 class Capitalise(Stage):
     name = "Capitalise"
-    def process(self, text):
+    def decode(self, text):
         return text.upper()
 class Lowercase(Stage):
     name = "Lower Case"
-    def process(self, text):
+    def decode(self, text):
         return text.lower()
 class Swapcase(Stage):
     name= "Swap case"
-    def process(self,text):
+    def decode(self, text):
         return text.swapcase()
 class Strip(Stage):
     name = "Strip punctuation"
-    def process(self, text):
+    def decode(self, text):
         stripped = ""
         for character in text:
             if character.upper() in Constants.alphabet or character == " ":
@@ -44,7 +44,7 @@ class Strip(Stage):
         return stripped
 class RemoveSpaces(Stage):
     name = "Remove Spaces"
-    def process(self, text):
+    def decode(self, text):
         removed = ""
         for character in text:
             if character != " ":
@@ -52,5 +52,5 @@ class RemoveSpaces(Stage):
         return removed
 class Reverse(Stage):
     name = "Reverse"
-    def process(self, text):
+    def decode(self, text):
         return text.rstrip("\n")[::-1]

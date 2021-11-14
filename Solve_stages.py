@@ -6,42 +6,30 @@ import math #For ceiling function (round up)
 
 class CaesarShift(Stage):
     name = "Caesar shift"
-    shift = 1
-    scale = None
-    down_button = None
-    up_button = None
-    decode_var = None
-    decode = None
-    encode = None
     def __init__(self, frame, updateFunction):
         self.scale = tk.Scale(frame, from_=0,to=25,orient="horizontal",length=500,command=lambda idk:updateFunction())
         self.down_button = tk.Button(frame, text = " - ",command = lambda:self.scale.set(self.scale.get()-1))
         self.up_button = tk.Button(frame, text = " + ",command = lambda:self.scale.set(self.scale.get()+1))
-        self.decode_var = tk.IntVar()
-        self.decode = tk.Radiobutton(frame, text="Decode", variable=self.decode_var,value=-1,command=updateFunction)
-        self.encode = tk.Radiobutton(frame, text="Encode", variable=self.decode_var,value=1,command=updateFunction)
-        self.decode_var.set(-1)
         self.frame = frame
     def display(self):
-        self.decode.grid(row=0, column=1, sticky="NW", padx=25)
-        self.encode.grid(row=0, column=2, sticky="NW", padx=25)
         self.down_button.grid(row=1, column=0, sticky="NW")
         self.scale.grid(row=1, column=1, columnspan=2, sticky="NEW")
         self.up_button.grid(row=1, column=3, sticky="NW")
         tk.Grid.rowconfigure(self.frame, 0, weight=0)
-        #tk.Grid.rowconfigure(self.frame, 1, weight=0)
         tk.Grid.columnconfigure(self.frame, 0, weight=0)
-        #tk.Grid.columnconfigure(self.frame, 1, weight=0)
-        #tk.Grid.columnconfigure(self.frame, 2, weight=1)
-        #tk.Grid.columnconfigure(self.frame, 3, weight=1)
-    def process(self, text):
+    def encode(self, text):
         shifted = ""
         for letter in text:
-            if letter.upper() in Constants.alphabet:
-                if letter == letter.upper():
-                    shifted += Constants.alphabet[((Constants.alphabet.index(letter)+self.decode_var.get()*self.scale.get()+1)%26)-1]
-                else:
-                    shifted += Constants.alphabet[((Constants.alphabet.index(letter.upper())+self.decode_var.get()*self.scale.get()+1)%26)-1].lower()
+            if letter.upper() in Constants.alphabet: #lowercase to UPPERCASE
+                shifted += Constants.alphabet[((Constants.alphabet.index(letter.upper())+self.scale.get()+1)%26)-1]
+            else:
+                shifted += letter
+        return shifted
+    def decode(self, text):
+        shifted = ""
+        for letter in text:
+            if letter in Constants.alphabet: #UPPER to lower
+                shifted += Constants.alphabet[((Constants.alphabet.index(letter)-self.scale.get()+1)%26)-1].lower()
             else:
                 shifted += letter
         return shifted
@@ -54,10 +42,24 @@ class Morse(Stage):
     morse_decode = {" ": "", "":""}
     for key, value in morse_encode.items():
         morse_decode[value] = key
-    def process(self, text):
-        return "".join([self.morse_decode[letter] for letter in text.split(self.seperator)]).lower()
+    def decode(self, text):
+        output_text = ""
+        for phrase in text.split(self.seperator):
+            if phrase in self.morse_decode.keys():
+                output_text += self.morse_decode[phrase].lower()
+            elif phrase in [""," "]:
+                pass
+            elif phrase == "/":
+                output_text += " "
+            else:
+                output_text += phrase
+        return output_text
+        #return "".join([self.morse_decode[letter] for letter in text.split(self.seperator)]).lower()
+    def encode(self, text):
+        return " ".join([self.morse_encode[letter.upper()] if letter != letter.upper and letter.upper() in Constants.alphabet else letter for letter in text])
 class Substitution(Stage):
     name = "Substitution"
+    arrow = " -> "
     def __init__(self, frame, updateFunction):
         self.substitutions = {}
         self.label_one = tk.Label(frame, text="Substitute")
@@ -78,9 +80,17 @@ class Substitution(Stage):
         self.sub_button.grid(row=0,column=4, padx=10)
         self.rev_button.grid(row=1,column=4, padx=10)
         self.sub_display.grid(row=0,column=5,rowspan=3)
-    def process(self, text):
+    def decode(self, text):
+        self.arrow = " -> "
+        self.displaySubs()
         for key, value in self.substitutions.items():
             text = text.replace(key,value)
+        return text
+    def encode(self, text):
+        self.arrow = " <- "
+        self.displaySubs()
+        for key, value in self.substitutions.items():
+            text = text.replace(value,key)
         return text
     def SE1S(self, event):#Functions to select the text in the entry widgets when they are tabbed to
         self.sub_entry_one.selection_range(0, tk.END)
@@ -103,13 +113,13 @@ class Substitution(Stage):
                     self.substitutions[letter_1] = letter_2
                     self.updateFunction()
         self.displaySubs()
+        self.updateFunction()
     def displaySubs(self):
         display_text = ""
         for letter in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
             if letter in self.substitutions.keys():
-                display_text = display_text + letter + " -> " + self.substitutions[letter] + "\n"
+                display_text = display_text + letter + self.arrow + self.substitutions[letter] + "\n"
         self.sub_display.configure(text=display_text)
-        self.updateFunction()
     def unSubstitute(self):
         s1 = self.sub_entry_one.get()
         s2 = self.sub_entry_two.get()
@@ -120,6 +130,7 @@ class Substitution(Stage):
         else:
             self.substitutions = {key:val for key, val in self.substitutions.items() if (key not in s1) or (val not in s2)}
         self.displaySubs()
+        self.updateFunction()
 class Affine(Stage):
     name = "Affine"
     def __init__(self, frame, updateFunction):
@@ -128,15 +139,9 @@ class Affine(Stage):
         self.aScale = tk.Scale(frame,from_=1,to=12,orient="horizontal",length=300,command=self.update,showvalue=False)
         self.bLabel = tk.Label(frame, text="1")
         self.bScale = tk.Scale(frame,from_=0,to=25,orient="horizontal",length=300,command=self.update,showvalue=False)
-        self.decode_var = tk.IntVar()
-        self.decode = tk.Radiobutton(frame, text="Decode", variable=self.decode_var,value=1,command=updateFunction)
-        self.encode = tk.Radiobutton(frame, text="Encode", variable=self.decode_var,value=0,command=updateFunction)
-        self.decode_var.set(1)
         self.updateFunction = updateFunction
         self.update("blah")
     def display(self):
-        self.decode.grid()
-        self.encode.grid()
         self.cycleButton.grid()
         self.aLabel.grid()
         self.aScale.grid()
@@ -158,64 +163,70 @@ class Affine(Stage):
         self.b = self.bScale.get()
         self.bLabel.config(text=self.b)
         self.updateFunction()
-        #print("a=",a)
-        #print("ia=",ia)
-        #print("b=",b)
-    def process(self, text):
-        inputText = text
-        if self.decode_var.get():
-            for letter in Constants.alphabet:
-                lNum = Constants.alphabet.index(letter)
-                rNum = Constants.alphabet[((self.ia*(lNum-self.b))%26)].lower()
-                inputText = inputText.replace(letter,rNum)
-        else:
-            for letter in Constants.alphabet:
-                lNum = Constants.alphabet.index(letter)
-                rNum = Constants.alphabet[((self.a*lNum+self.b)%26)].upper()
-                inputText = inputText.replace(letter.lower(),rNum)
-        return inputText
+    def encode(self, text):
+        for letter in Constants.alphabet:
+            lNum = Constants.alphabet.index(letter)
+            rNum = Constants.alphabet[((self.a*lNum+self.b)%26)].upper()
+            text = text.replace(letter.lower(),rNum)
+        return text
+    def decode(self, text):
+        for letter in Constants.alphabet:
+            lNum = Constants.alphabet.index(letter)
+            rNum = Constants.alphabet[((self.ia*(lNum-self.b))%26)].lower()
+            text = text.replace(letter,rNum)
+        return text
 class Vigenere(Stage):
     name = "Vigenere"
     def __init__(self, frame, updateFunction):
         self.keyVar = tk.StringVar()
         self.keyVar.trace_add("write", self.update)
         self.keyEntry = tk.Entry(frame,width=15, textvariable=self.keyVar)
-        self.decode_var = tk.IntVar()
-        self.decode = tk.Radiobutton(frame, text="Decode", variable=self.decode_var,value=1,command=updateFunction)
-        self.encode = tk.Radiobutton(frame, text="Encode", variable=self.decode_var,value=-1,command=updateFunction)
-        self.decode_var.set(1)
         self.updateFunction = updateFunction
-        #self.update("blah")
     def display(self):
         self.keyEntry.grid()
-        self.decode.grid()
-        self.encode.grid()
     def update(self, arg1, arg2, arg3):
         self.updateFunction()
-    def process(self, text):
-        outputText = ""
-        i = 0
-        #print(self.keyVar.get())
-        if len(self.keyVar.get()) == 0:
+    def encode(self, text):
+        output_text = ""
+        key_index = 0
+        key = self.keyVar.get()
+        if len(self.keyVar.get()) == 0: #Ignore if the key box is empty
             return text
         for letter in text:
-            if letter.upper() in Constants.alphabet:
-                if self.keyVar.get()[i%len(self.keyVar.get())].upper() in Constants.alphabet:
-                    knum = Constants.alphabet.index(self.keyVar.get()[i % len(self.keyVar.get())].upper())
+            if letter.upper() in Constants.alphabet and letter != letter.upper(): #lowercase letters in the alphabet only
+                key_letter = key[key_index % len(key)].upper()
+                if key_letter in Constants.alphabet:
+                    knum = Constants.alphabet.index(key_letter)
                     lnum = Constants.alphabet.index(letter.upper())
-                    newLetter = Constants.alphabet[((lnum - (knum*self.decode_var.get())))%26]
-                    if letter.upper() == letter:
-                        outputText += newLetter.lower()
-                    else:
-                        outputText += newLetter
+                    newLetter = Constants.alphabet[(lnum + knum)%26]
+                    output_text += newLetter
                 else:
-                    #outputText += "?"
-                    outputText += letter
-                i += 1
+                    output_text += "?" #integrate with blanking somehow
+                key_index += 1
             else:
-                outputText += letter
-        return outputText
-class Transposition(Stage):
+                output_text += letter
+        return output_text
+    def decode(self, text):
+        output_text = ""
+        key_index = 0
+        key = self.keyVar.get()
+        if len(self.keyVar.get()) == 0: #Ignore if the key box is empty
+            return text
+        for letter in text:
+            if letter in Constants.alphabet: #UPPERCASE letters in the alphabet only
+                key_letter = key[key_index % len(key)].upper()
+                if key_letter in Constants.alphabet:
+                    knum = Constants.alphabet.index(key_letter)
+                    lnum = Constants.alphabet.index(letter)
+                    newLetter = Constants.alphabet[(lnum - knum)%26]
+                    output_text += newLetter.lower()
+                else:
+                    output_text += "?"
+                key_index += 1
+            else:
+                output_text += letter
+        return output_text
+class Transposition(Stage): #this one is broken
     name = "Transposition"
     def __init__(self, frame, updateFunction):
         self.updateFunction = updateFunction
@@ -309,7 +320,7 @@ class Transposition(Stage):
             elif tv.column(col, 'id') != self.col_from_id:
                 self.swap(tv, self.col_from_id, col)
 
-    def process(self, text):
+    def process(self, text): #swap for encode and decode
         got = self.keyVar.get()
         if got == "":
             got = "1"

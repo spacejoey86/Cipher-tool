@@ -29,11 +29,9 @@ class OutputHighlight(Stage):
             textRef.tag_add("highlight", pos, index2)
     def display(self):
         self.textBox.grid()
-    def process(self, text):
-        return text
 class Blank(Stage):
     name = "Blank"
-    def process(self, text):
+    def decode(self, text):
         blanked = ""
         for character in text:
             if character.upper() == character:
