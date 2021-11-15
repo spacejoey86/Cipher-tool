@@ -34,6 +34,23 @@ class PlayfairDetect(Stage):
         else:
             self.output.configure(text="Doubles not found, this could be a Playfair cipher")
         return text
+class IoC(Stage):
+    name = "Index of Coincedence"
+    def __init__(self, frame, updateFunction):
+        self.updateFunction = updateFunction
+        self.output_label = tk.Label(frame, text="")
+    def display(self):
+        self.output_label.grid(sticky="NW")
+    def decode(self, text):
+        o = sum([f*(f-1) for f in [text.count(letter) + text.count(letter.lower()) for letter in Constants.alphabet]])
+        length = sum([1 for letter in text if letter in Constants.alphabet or letter.upper() in Constants.alphabet])
+        r = length * (length - 1)
+        if r != 0:
+            IoC = round(o / r, 5)
+        else:
+            IoC = "Failed: length cannot be 0 or 1"
+        self.output_label.configure(text="IoC = " + str(IoC))
+        return text
 class VigenereKeyword(Stage):
     name = "Vigenere keyword length"
     def __init__(self, frame, updateFunction):

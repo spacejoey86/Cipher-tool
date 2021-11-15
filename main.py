@@ -183,7 +183,7 @@ add(ana_menu, Length)
 add(ana_menu, PlayfairDetect)
 add(ana_menu, FrequencyAnalyse)
 add(ana_menu, Doubles)
-#add(ana_menu, IoC) #add index of coincedence here
+add(ana_menu, IoC)
 add(ana_menu, WordFinder)
 add(ana_menu, VigenereKeyword)
 menu.add_cascade(label="Analyse", menu=ana_menu)
