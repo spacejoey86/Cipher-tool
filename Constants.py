@@ -9,7 +9,7 @@ class Stage:
     def decode(self, text):
         return text
     def encode(self, text): #by default the same as decode (for text stages)
-        return self.encode(text)
+        return self.decode(text)
     def display(self): #should grid/pack the stage's widgets
         pass
     def updateOutputWidget(self, text, textRef): #called after all the text is processed, for changing text colours etc
