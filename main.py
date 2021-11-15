@@ -195,6 +195,7 @@ add(text_menu, Swapcase)
 add(text_menu, Strip)
 add(text_menu, RemoveSpaces)
 add(text_menu, Reverse)
+add(text_menu, Block)
 menu.add_cascade(label="Text stage", menu=text_menu)
 
 solve_menu = tk.Menu(menu, tearoff=0)

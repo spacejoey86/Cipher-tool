@@ -34,6 +34,19 @@ class Swapcase(Stage):
     name= "Swap case"
     def decode(self, text):
         return text.swapcase()
+class Block(Stage):
+    name = "Block text"
+    def __init__(self, frame, updateFunction):
+        self.updateFunction = updateFunction
+        self.input_var = tk.IntVar(value="5")
+        self.n_input = tk.Entry(frame, width=5, textvariable = self.input_var)
+        self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
+    def decode(self, text):
+        n = self.input_var.get()
+        #if n.isnumeric():
+        return " ".join([text[i:i+n] for i in range(0, len(text), n)])
+        #else: #add status bar message here
+        #    return text
 class Strip(Stage):
     name = "Strip punctuation"
     def decode(self, text):
