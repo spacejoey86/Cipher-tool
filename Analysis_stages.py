@@ -194,3 +194,31 @@ class Doubles(Stage):
             output_text += letter + " = " + str(frequency[letter]) + "\n"
         self.output.configure(text=output_text)
         return text
+class Triples(Stage):
+    name = "Trigram frequencies"
+    def __init__(self, frame, updateFunction):
+        self.frame = frame
+        self.updateFunction = updateFunction
+        self.frame2 = tk.Frame(frame)
+        self.frame2.rowconfigure(0, weight=1)
+        self.frame2.columnconfigure(0, weight=1)
+        self.frame2.columnconfigure(1, weight=1)
+        self.canvas = tk.Canvas(self.frame2)
+        self.scroll = tk.Scrollbar(self.frame2, orient="vertical", command=self.canvas.yview)
+        self.output = tk.Label(self.canvas, text="")
+        self.output.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        self.canvas.create_window((0, 0), window=self.output, anchor="nw")
+        self.canvas.configure(yscrollcommand=self.scroll.set)
+    def display(self):
+        self.frame2.grid(sticky="NSW")
+        self.canvas.grid(sticky="NS")
+        self.scroll.grid(sticky="NS", column=1, row=0)
+    def decode(self, text):
+        frequency = {}
+        for letter in set(text[i]+text[i+1]+text[i+2] for i in range(len(text)-2)):
+            frequency[letter] = round(text.count(letter)/len(text)*100, 2)
+        output_text = ""
+        for letter in sorted(frequency, key=frequency.__getitem__, reverse=True):
+            output_text += letter + " = " + str(frequency[letter]) + "\n"
+        self.output.configure(text=output_text)
+        return text
