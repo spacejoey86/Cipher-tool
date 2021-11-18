@@ -190,6 +190,51 @@ class Affine(Stage):
                 rNum = Constants.alphabet[((self.a*lNum+self.b)%26)].upper()
                 inputText = inputText.replace(letter.lower(),rNum)
         return inputText
+class VigenerePartial(Stage): #For solving a vigenere cipher after you know the key length
+    name = "Partial Vigenere"
+    def __init__(self, frame, updateFunction):
+        self.updateFunction = updateFunction
+        self.frame = frame
+        self.lenVar = tk.StringVar()
+        self.lenVar.trace_add("write", lambda a, b, c : self.update()) #calls self.update every time the text changes in the box below
+        self.keyLengthEntry = tk.Entry(frame, width=5, textvariable=self.lenVar)
+        self.caesarFrame = tk.Frame(frame)
+        self.caesars = []
+    def update(self):#Called when the proposed keyword length changes
+        self.updateList()
+        self.display()
+        self.updateFunction()
+    def updateList(self):
+        if self.lenVar.get().isnumeric() and len(self.caesars) != int(self.lenVar.get()):
+            for scale in self.caesarFrame.winfo_children():
+                scale.destroy() #get rid of any widgets from the previous time
+            self.caesars = []
+            for i in range(int(self.lenVar.get())):
+                scale = tk.Scale(self.caesarFrame, from_=0, to=25, orient="horizontal",length=500,command=lambda a:self.updateFunction())
+                self.caesars.append(scale)
+    def display(self):
+        self.updateList()
+        self.keyLengthEntry.grid()
+        self.caesarFrame.grid()
+        
+        
+        for scale in self.caesars:
+            scale.grid()
+    def process(self, text):
+        self.updateList()
+        if self.lenVar.get().isnumeric():
+            output_text = ""
+            for letter_index in range(len(text)):
+                if text[letter_index] in Constants.alphabet:
+                    letter = text[letter_index]
+                    letter_as_number = Constants.alphabet.index(letter)
+                    keyword_length = int(self.lenVar.get())
+                    index_of_keyword = letter_index % keyword_length
+                    shift = self.caesars[index_of_keyword].get()
+                    output_text += Constants.alphabet[(letter_as_number - shift) % 26].lower()
+        else:
+            output_text = text
+        return output_text
 class Vigenere(Stage):
     name = "Vigenere"
     def __init__(self, frame, updateFunction):

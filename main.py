@@ -173,6 +173,7 @@ solve_menu.add_command(label="Caesar Shift", command=lambda:addStage(CaesarShift
 solve_menu.add_command(label="Substitution", command=lambda:addStage(Substitution(stage_editor, updateOutputText)))
 solve_menu.add_command(label="Affine", command=lambda:addStage(Affine(stage_editor, updateOutputText)))
 solve_menu.add_command(label="Viginere", command=lambda:addStage(Vigenere(stage_editor, updateOutputText)))
+solve_menu.add_command(label="Partial Viginere", command=lambda:addStage(VigenerePartial(stage_editor, updateOutputText)))
 solve_menu.add_command(label="Transposition", command=lambda:addStage(Transposition(stage_editor, updateOutputText)))
 menu.add_cascade(label="Solve stage", menu=solve_menu)
 root.config(menu=menu)
