@@ -73,6 +73,67 @@ class RailFence(Stage):
                     output += text[letter_index]
             text = output
         return text
+class Scytale(Stage):
+    name = "Scytale"
+    def __init__(self, frame, updateFunction):
+        self.variations = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
+        self.variation_selection = tk.StringVar(frame, "Write vertically, read horizontally")
+        self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=self.update)
+        self.key_length = tk.StringVar(value="2")
+        self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length)
+        self.key_length.trace_add("write", lambda a, b, c, self=self : updateFunction())
+        self.frame = frame
+        self.updateFunction = updateFunction
+    def update(self, args):
+        self.updateFunction()
+    def display(self):
+        tk.Grid.rowconfigure(self.frame, 0, weight=0)
+        tk.Grid.columnconfigure(self.frame, 0, weight=0)
+        self.option_menu.grid(column=0, sticky="NW")
+        self.key_length_input.grid(column=1, row=0, sticky="NW", padx=20)
+    def decode(self, text):
+        if self.key_length.get().isnumeric():
+            # A generator so the rails can be looped through in the right order
+            def looping_counter(maximum):
+                counter = 0
+                while True:
+                    yield counter % maximum
+                    counter += 1
+
+            output = ""
+            line_lengths = {}
+            key_length = int(self.key_length.get())
+            
+            # The text is a number of complete cycles, plus an extra length
+            cycle_length = key_length
+            extra_length = len(text) % cycle_length
+            
+            # Work out the length of the lines
+            for line_index in range(key_length): # This ignores the extra length
+                line_lengths[line_index] = (len(text) - extra_length) // (key_length)
+
+            counter = looping_counter(key_length)
+            for i in range(extra_length): # This adds the extra length
+                line_lengths[next(counter)] += 1
+
+            # Find the index of each letter in the ciphertext then add it to output
+            if self.variation_selection.get() == "Write horizontally, read vertically":
+                counter = looping_counter(key_length)
+                for line in range(key_length):
+                    for index in range(line_lengths[line]):
+                        letter_index = index * key_length + line
+                        output += text[letter_index]
+            elif self.variation_selection.get() == "Write vertically, read horizontally":
+                counter = looping_counter(key_length)
+                for i in range(len(text)):
+                    current_count = next(counter)
+                    letter_index = 0
+                    for line in range(current_count):
+                        letter_index += line_lengths[line]
+                    letter_index += i // (key_length)
+                    output += text[letter_index]
+            text = output
+        return text
 class CaesarShift(Stage):
     name = "Caesar shift"
     def __init__(self, frame, updateFunction):
