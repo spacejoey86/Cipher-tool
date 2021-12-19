@@ -210,18 +210,26 @@ class VigenerePartial(Stage): #For solving a vigenere cipher after you know the 
                 scale.destroy() #get rid of any widgets from the previous time
             self.caesars = []
             for i in range(int(self.lenVar.get())):
+                label = tk.Label(self.caesarFrame, text="A")
                 scale = tk.Scale(self.caesarFrame, from_=0, to=25, orient="horizontal",length=500,command=lambda a:self.updateFunction())
-                self.caesars.append(scale)
+                self.caesars.append((label, scale))
     def display(self):
         self.updateList()
         self.keyLengthEntry.grid()
         self.caesarFrame.grid()
         
         
-        for scale in self.caesars:
+        for label, scale in self.caesars:
+            label.grid()
             scale.grid()
+        self.updateLabels()
+    def updateLabels(self):
     def process(self, text):
         self.updateList()
+
+        for keyword_index in range(len(self.caesars)):
+            self.caesars[keyword_index][0].configure(text="B") #change to get the frequency analysis for that key index
+        
         if self.lenVar.get().isnumeric():
             output_text = ""
             for letter_index in range(len(text)):
@@ -230,7 +238,7 @@ class VigenerePartial(Stage): #For solving a vigenere cipher after you know the 
                     letter_as_number = Constants.alphabet.index(letter)
                     keyword_length = int(self.lenVar.get())
                     index_of_keyword = letter_index % keyword_length
-                    shift = self.caesars[index_of_keyword].get()
+                    shift = self.caesars[index_of_keyword][1].get()
                     output_text += Constants.alphabet[(letter_as_number - shift) % 26].lower()
         else:
             output_text = text
