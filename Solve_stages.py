@@ -216,20 +216,18 @@ class Morse(Stage):
             else:
                 output_text += phrase
         return output_text
-        #return "".join([self.morse_decode[letter] for letter in text.split(self.seperator)]).lower()
     def encode(self, text):
         return " ".join([self.morse_encode[letter.upper()] if letter != letter.upper and letter.upper() in Constants.alphabet else letter for letter in text])
 class Substitution(Stage):
     name = "Substitution"
-    arrow = " -> "
     def __init__(self, frame, updateFunction):
         self.substitutions = {}
         self.label_one = tk.Label(frame, text="Substitute")
         self.sub_entry_one = tk.Entry(frame, width=20)
-        self.sub_entry_one.bind("<FocusIn>",self.SE1S)
+        self.sub_entry_one.bind("<FocusIn>",lambda event:self.sub_entry_one.selection_range(0, tk.END))
         self.label_two = tk.Label(frame, text="for")
         self.sub_entry_two = tk.Entry(frame, width=20)
-        self.sub_entry_two.bind("<FocusIn>",self.SE2S)
+        self.sub_entry_two.bind("<FocusIn>",lambda event:self.sub_entry_two.selection_range(0, tk.END))
         self.sub_button = tk.Button(frame, text="Substitute",command=self.substitute)
         self.rev_button = tk.Button(frame, text="Un-substitute",command=self.unSubstitute,takefocus=0)
         self.sub_display = tk.Label(frame,text="")
@@ -243,21 +241,15 @@ class Substitution(Stage):
         self.rev_button.grid(row=1,column=4, padx=10)
         self.sub_display.grid(row=0,column=5,rowspan=3)
     def decode(self, text):
-        self.arrow = " -> "
-        self.displaySubs()
+        self.displaySubs(" -> ")
         for key, value in self.substitutions.items():
             text = text.replace(key,value)
         return text
     def encode(self, text):
-        self.arrow = " <- "
-        self.displaySubs()
+        self.displaySubs(" <- ")
         for key, value in self.substitutions.items():
             text = text.replace(value,key)
         return text
-    def SE1S(self, event):#Functions to select the text in the entry widgets when they are tabbed to
-        self.sub_entry_one.selection_range(0, tk.END)
-    def SE2S(self, event):
-        self.sub_entry_two.selection_range(0, tk.END)
     def substitute(self):
         phrase1 = self.sub_entry_one.get()
         phrase2 = self.sub_entry_two.get()
@@ -274,13 +266,12 @@ class Substitution(Stage):
                 else:
                     self.substitutions[letter_1] = letter_2
                     self.updateFunction()
-        self.displaySubs()
         self.updateFunction()
-    def displaySubs(self):
+    def displaySubs(self, arrow):
         display_text = ""
         for letter in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
             if letter in self.substitutions.keys():
-                display_text = display_text + letter + self.arrow + self.substitutions[letter] + "\n"
+                display_text = display_text + letter + arrow + self.substitutions[letter] + "\n"
         self.sub_display.configure(text=display_text)
     def unSubstitute(self):
         s1 = self.sub_entry_one.get()
@@ -291,7 +282,6 @@ class Substitution(Stage):
             self.substitutions = {key:val for key, val in self.substitutions.items() if key not in s1}
         else:
             self.substitutions = {key:val for key, val in self.substitutions.items() if (key not in s1) or (val not in s2)}
-        self.displaySubs()
         self.updateFunction()
 class Affine(Stage):
     name = "Affine"
@@ -341,13 +331,11 @@ class Vigenere(Stage):
     name = "Vigenere"
     def __init__(self, frame, updateFunction):
         self.keyVar = tk.StringVar()
-        self.keyVar.trace_add("write", self.update)
+        self.keyVar.trace_add("write", lambda a,b,c : self.updateFunction())
         self.keyEntry = tk.Entry(frame,width=15, textvariable=self.keyVar)
         self.updateFunction = updateFunction
     def display(self):
         self.keyEntry.grid()
-    def update(self, arg1, arg2, arg3):
-        self.updateFunction()
     def encode(self, text):
         output_text = ""
         key_index = 0
