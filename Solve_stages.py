@@ -9,83 +9,97 @@ class RailFence(Stage):
     def __init__(self, frame, updateFunction):
         self.variations = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
         self.variation_selection = tk.StringVar(frame, "Write vertically, read horizontally")
-        self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=self.update)
-        self.key_length = tk.StringVar(value="2")
-        self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length)
-        self.key_length.trace_add("write", lambda a, b, c, self=self : updateFunction())
+        self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
+        self.key_length_string = tk.StringVar(value="2")
+        self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length_string)
+        self.key_length_string.trace_add("write", lambda a, b, c : updateFunction())
         self.frame = frame
-        self.updateFunction = updateFunction
-    def update(self, args):
-        self.updateFunction()
     def display(self):
         self.option_menu.grid(sticky="NW")
         self.key_length_input.grid(column=1, row=0, sticky="NW", padx=20)
         tk.Grid.rowconfigure(self.frame, 0, weight=0)
         tk.Grid.columnconfigure(self.frame, 0, weight=0)
-    def decode(self, text):
-        if self.key_length.get().isnumeric():
-            # A generator so the rails can be looped through in the right order
-            def looping_counter(maximum):
-                counter = [0, 0]
-                while True:
-                    yield counter[1]
-                    counter[0] = (counter[0] + 1) % (maximum * 2 - 2)
-                    counter[1] = counter[0] - 2 * (counter[0] // maximum) * (counter[0] % maximum + 1)
-
-            output = ""
-            rail_lengths = {}
-            key_length = int(self.key_length.get())
+    def looping_counter(self, maximum): # A generator so the rails can be looped through in the right order
+        counter = [0, 0]
+        while True:
+            yield counter[1]
+            counter[0] = (counter[0] + 1) % (maximum * 2 - 2)
+            counter[1] = counter[0] - 2 * (counter[0] // maximum) * (counter[0] % maximum + 1)
+    def update_variables(self, text):
+        if self.key_length_string.get().isnumeric():
+            self.rail_lengths = {}
+            self.key_length = int(self.key_length_string.get())
             
             # The text is a number of complete cycles, plus an extra length
-            cycle_length = key_length * 2 - 2
-            extra_length = len(text) % cycle_length
+            self.cycle_length = self.key_length * 2 - 2
+            self.extra_length = len(text) % self.cycle_length
             
             # Work out the length of the rails
-            for rail_index in range(key_length): # This ignores the extra length
-                rail_lengths[rail_index] = (len(text) - extra_length) // (key_length - 1)
-                if rail_index == 0 or rail_index == key_length - 1:
-                    rail_lengths[rail_index] = rail_lengths[rail_index] // 2
+            for rail_index in range(self.key_length): # This ignores the extra length
+                self.rail_lengths[rail_index] = (len(text) - self.extra_length) // (self.key_length - 1)
+                if rail_index == 0 or rail_index == self.key_length - 1:
+                    self.rail_lengths[rail_index] = self.rail_lengths[rail_index] // 2
 
-            counter = looping_counter(key_length)
-            for i in range(extra_length): # This adds the extra length
-                rail_lengths[next(counter)] += 1
-
+            counter = self.looping_counter(self.key_length)
+            for i in range(self.extra_length): # This adds the extra length
+                self.rail_lengths[next(counter)] += 1
+    def write_horizontal(self, text):
+        if self.key_length_string.get().isnumeric():
+            output = ""
+            
             # Find the index of each letter in the ciphertext then add it to output
-            if self.variation_selection.get() == "Write horizontally, read vertically":
-                for rail in range(key_length):
-                    for index in range(rail_lengths[rail]):
-                        if rail == 0 or rail == key_length - 1:
-                            letter_index = index * cycle_length + rail
-                        else:
-                            letter_index = index * (key_length - 1) + rail
-                        output += text[letter_index]
-            elif self.variation_selection.get() == "Write vertically, read horizontally":
-                counter = looping_counter(key_length)
-                for i in range(len(text)):
-                    current_count = next(counter)
+            for rail in range(self.key_length):
+                for index in range(self.rail_lengths[rail]):
                     letter_index = 0
-                    for rail in range(current_count):
-                        letter_index += rail_lengths[rail]
-                    if current_count == 0 or current_count == key_length - 1:
-                        letter_index += i // cycle_length
+                    letter_index += rail
+                    if rail == 0 or rail == self.key_length - 1:
+                        letter_index += index * self.cycle_length
                     else:
-                        letter_index += i // (key_length - 1)
-                    output += text[letter_index]
+                        letter_index += index * (self.key_length - 1)
+                        if index % 2 == 1:
+                            letter_index += ((self.key_length - 1) / 2 - rail) * 2
+                    output += text[int(letter_index)]
+            return output
+    def write_vertical(self, text):
+        if self.key_length_string.get().isnumeric():
+            output = ""
+            
+            # Find the index of each letter in the ciphertext then add it to output
+            counter = self.looping_counter(self.key_length)
+            for i in range(len(text)):
+                current_count = next(counter)
+                letter_index = 0
+                for rail in range(current_count):
+                    letter_index += self.rail_lengths[rail]
+                if current_count == 0 or current_count == self.key_length - 1:
+                    letter_index += i // self.cycle_length
+                else:
+                    letter_index += i // (self.key_length - 1)
+                output += text[letter_index]
             text = output
         return text
+    def decode(self, text):
+        self.update_variables(text)
+        if self.variation_selection.get() == "Write horizontally, read vertically":
+            return self.write_horizontal(text)
+        elif self.variation_selection.get() == "Write vertically, read horizontally":
+            return self.write_vertical(text)
+    def encode(self, text):
+        self.update_variables(text)
+        if self.variation_selection.get() == "Write horizontally, read vertically":
+            return self.write_vertical(text)
+        elif self.variation_selection.get() == "Write vertically, read horizontally":
+            return self.write_horizontal(text)
 class Scytale(Stage):
     name = "Scytale"
     def __init__(self, frame, updateFunction):
         self.variations = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
         self.variation_selection = tk.StringVar(frame, "Write vertically, read horizontally")
-        self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=self.update)
+        self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args, self=self : updateFunction())
         self.key_length = tk.StringVar(value="2")
         self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length)
         self.key_length.trace_add("write", lambda a, b, c, self=self : updateFunction())
         self.frame = frame
-        self.updateFunction = updateFunction
-    def update(self, args):
-        self.updateFunction()
     def display(self):
         tk.Grid.rowconfigure(self.frame, 0, weight=0)
         tk.Grid.columnconfigure(self.frame, 0, weight=0)
@@ -93,7 +107,7 @@ class Scytale(Stage):
         self.key_length_input.grid(column=1, row=0, sticky="NW", padx=20)
     def decode(self, text):
         if self.key_length.get().isnumeric():
-            # A generator so the rails can be looped through in the right order
+            # A generator so the lines can be looped through in the right order
             def looping_counter(maximum):
                 counter = 0
                 while True:
