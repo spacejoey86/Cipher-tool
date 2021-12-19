@@ -59,7 +59,8 @@ class RailFence(Stage):
                         if index % 2 == 1:
                             letter_index += ((self.key_length - 1) / 2 - rail) * 2
                     output += text[int(letter_index)]
-            return output
+            text = output
+        return text
     def write_vertical(self, text):
         if self.key_length_string.get().isnumeric():
             output = ""
