@@ -20,28 +20,36 @@ class Input(Stage):
         self.textbox.grid(sticky="NSEW")
         tk.Grid.rowconfigure(self.frame, 0, weight=1)
         tk.Grid.columnconfigure(self.frame, 0, weight=1)
-    def process(self, text):
+    def decode(self, text):
         return self.textbox.get("1.0",tk.END).rstrip("\n")
-class Output(Stage):
-    name = "Output"
-    def process(self, text):
-        print(text)
-    
 class Capitalise(Stage):
     name = "Capitalise"
-    def process(self, text):
+    def decode(self, text):
         return text.upper()
 class Lowercase(Stage):
     name = "Lower Case"
-    def process(self, text):
+    def decode(self, text):
         return text.lower()
 class Swapcase(Stage):
     name= "Swap case"
-    def process(self,text):
+    def decode(self, text):
         return text.swapcase()
+class Block(Stage):
+    name = "Block text"
+    def __init__(self, frame, updateFunction):
+        self.updateFunction = updateFunction
+        self.input_var = tk.IntVar(value="5")
+        self.n_input = tk.Entry(frame, width=5, textvariable = self.input_var)
+        self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
+    def decode(self, text):
+        n = self.input_var.get()
+        #if n.isnumeric():
+        return " ".join([text[i:i+n] for i in range(0, len(text), n)])
+        #else: #add status bar message here
+        #    return text
 class Strip(Stage):
     name = "Strip punctuation"
-    def process(self, text):
+    def decode(self, text):
         stripped = ""
         for character in text:
             if character.upper() in Constants.alphabet or character == " ":
@@ -49,7 +57,7 @@ class Strip(Stage):
         return stripped
 class RemoveSpaces(Stage):
     name = "Remove Spaces"
-    def process(self, text):
+    def decode(self, text):
         removed = ""
         for character in text:
             if character != " ":
@@ -57,15 +65,5 @@ class RemoveSpaces(Stage):
         return removed
 class Reverse(Stage):
     name = "Reverse"
-    def process(self, text):
+    def decode(self, text):
         return text.rstrip("\n")[::-1]
-class Blank(Stage):
-    name = "Blank"
-    def process(self, text):
-        blanked = ""
-        for character in text:
-            if character.upper() == character:
-                blanked += " "
-            else:
-                blanked += character
-        return blanked

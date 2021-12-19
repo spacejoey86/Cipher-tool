@@ -11,7 +11,7 @@ class Length(Stage):
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def process(self, text):
+    def decode(self, text):
         self.output.configure(text="Length = " + str(len(text)))
         return text
 class PlayfairDetect(Stage):
@@ -23,7 +23,7 @@ class PlayfairDetect(Stage):
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def process(self, text):
+    def decode(self, text):
         doubles = False
         for i in range(len(text)//2):
             if text[i] == text[i+1]:
@@ -34,6 +34,23 @@ class PlayfairDetect(Stage):
         else:
             self.output.configure(text="Doubles not found, this could be a Playfair cipher")
         return text
+class IoC(Stage):
+    name = "Index of Coincedence"
+    def __init__(self, frame, updateFunction):
+        self.updateFunction = updateFunction
+        self.output_label = tk.Label(frame, text="")
+    def display(self):
+        self.output_label.grid(sticky="NW")
+    def decode(self, text):
+        o = sum([f*(f-1) for f in [text.count(letter) + text.count(letter.lower()) for letter in Constants.alphabet]])
+        length = sum([1 for letter in text if letter in Constants.alphabet or letter.upper() in Constants.alphabet])
+        r = length * (length - 1)
+        if r != 0:
+            IoC = round(o / r, 5)
+        else:
+            IoC = "Failed: length cannot be 0 or 1"
+        self.output_label.configure(text="IoC = " + str(IoC))
+        return text
 class VigenereKeyword(Stage):
     name = "Vigenere keyword length"
     def __init__(self, frame, updateFunction):
@@ -42,7 +59,6 @@ class VigenereKeyword(Stage):
         self.input_var = tk.StringVar(value="20")
         self.input = tk.Entry(frame, width=5, textvariable=self.input_var)
         self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
-        #self.input.configure(text="20")
         self.output = tk.Label(frame, text="")
     def display(self):
         self.input.grid(sticky="NW")
@@ -61,7 +77,7 @@ class VigenereKeyword(Stage):
             a += frequency[letter] * (frequency[letter] - 1)
         IC = a / (length * (length - 1))
         return round(IC, 5)
-    def process(self, text):
+    def decode(self, text):
         if self.input.get().isnumeric():
             outputText = ""
             for currentKey in range(2, int(self.input.get()) + 1):
@@ -111,8 +127,8 @@ class WordFinder(Stage):
                 else:
                     outputText.append(outputText[repeated])
         return outputText
-    def process(self, text):
-        #self.input needs to have repeated letters, else it will match everything
+    def decode(self, text):
+        #self.input needs to have repeated letters, else it will match everything. add status bar message
         matches = {}
         for index, letter in enumerate(text):
             testWord = ""
@@ -141,7 +157,7 @@ class FrequencyAnalyse(Stage):
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def process(self, text):
+    def decode(self, text):
         frequency = {}
         for letter in set(text):
             frequency[letter] = round(text.count(letter)/len(text)*100, 2)
@@ -169,9 +185,37 @@ class Doubles(Stage):
         self.frame2.grid(sticky="NSW")
         self.canvas.grid(sticky="NS")
         self.scroll.grid(sticky="NS", column=1, row=0)
-    def process(self, text):
+    def decode(self, text):
         frequency = {}
         for letter in set(text[i]+text[i+1] for i in range(len(text)-1)):
+            frequency[letter] = round(text.count(letter)/len(text)*100, 2)
+        output_text = ""
+        for letter in sorted(frequency, key=frequency.__getitem__, reverse=True):
+            output_text += letter + " = " + str(frequency[letter]) + "\n"
+        self.output.configure(text=output_text)
+        return text
+class Triples(Stage):
+    name = "Trigram frequencies"
+    def __init__(self, frame, updateFunction):
+        self.frame = frame
+        self.updateFunction = updateFunction
+        self.frame2 = tk.Frame(frame)
+        self.frame2.rowconfigure(0, weight=1)
+        self.frame2.columnconfigure(0, weight=1)
+        self.frame2.columnconfigure(1, weight=1)
+        self.canvas = tk.Canvas(self.frame2)
+        self.scroll = tk.Scrollbar(self.frame2, orient="vertical", command=self.canvas.yview)
+        self.output = tk.Label(self.canvas, text="")
+        self.output.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        self.canvas.create_window((0, 0), window=self.output, anchor="nw")
+        self.canvas.configure(yscrollcommand=self.scroll.set)
+    def display(self):
+        self.frame2.grid(sticky="NSW")
+        self.canvas.grid(sticky="NS")
+        self.scroll.grid(sticky="NS", column=1, row=0)
+    def decode(self, text):
+        frequency = {}
+        for letter in set(text[i]+text[i+1]+text[i+2] for i in range(len(text)-2)):
             frequency[letter] = round(text.count(letter)/len(text)*100, 2)
         output_text = ""
         for letter in sorted(frequency, key=frequency.__getitem__, reverse=True):
