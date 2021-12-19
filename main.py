@@ -205,6 +205,8 @@ add(solve_menu, Substitution)
 add(solve_menu, Affine)
 add(solve_menu, Vigenere)
 #add(solve_menu, Transposition) #this one doesn't work
+add(solve_menu, RailFence)
+add(solve_menu, Scytale)
 add(solve_menu, Morse)
 menu.add_cascade(label="Solve stage", menu=solve_menu)
 
