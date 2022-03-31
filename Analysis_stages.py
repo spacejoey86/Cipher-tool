@@ -1,6 +1,6 @@
 import tkinter as tk
 import Constants
-from Constants import Stage
+from Constants import Stage, vowels, vowel_rarity
 
 class Length(Stage):
     name = "Length"
@@ -221,4 +221,62 @@ class Triples(Stage):
         for letter in sorted(frequency, key=frequency.__getitem__, reverse=True):
             output_text += letter + " = " + str(frequency[letter]) + "\n"
         self.output.configure(text=output_text)
+        return text
+class ColumnarKeyword(Stage):
+    name = "Columnar Analysis"
+    def __init__(self, frame, updateFunction):
+        self.variations = ["Write by rows, read by collumns", "Write by row, read by rows"]
+        self.variation_selection = tk.StringVar(frame, "Write by rows, read by collumns")
+        self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
+        self.updateFunction = updateFunction
+        self.input_var = tk.StringVar(value="20")
+        self.input = tk.Entry(frame, width=5, textvariable=self.input_var)
+        self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
+        self.output = tk.Label(frame, text="")
+        self.frame = frame
+    def display(self):
+        self.option_menu.grid(sticky="NW")
+        self.input.grid(column=1, row=0, sticky="NW", padx=20)
+        self.output.grid(sticky="NW")
+        tk.Grid.rowconfigure(self.frame, 0, weight=0)
+        tk.Grid.columnconfigure(self.frame, 0, weight=0)
+    def decode(self, text):
+        output = ""
+        if self.input_var.get().isnumeric():
+            vowel_differences = {}
+            for key_length in range(1, int(self.input_var.get())):
+                if key_length == 0 or key_length == 1:
+                    continue
+                if self.variation_selection.get() == "Write by rows, read by collumns":
+                    collumn_lengths = []
+                    for collumn in range(key_length):
+                        collumn_lengths.append(len(text) // key_length)
+                        if collumn < len(text) % key_length:
+                            collumn_lengths[collumn] += 1
+                    row_text = ""
+                    for letter in range(len(text)):
+                        letter_index = 0
+                        for collumn in range(letter % key_length):
+                            letter_index += collumn_lengths[collumn]
+                        letter_index += letter // (key_length)
+                        row_text += text[letter_index]
+                elif self.variation_selection.get() == "Write by row, read by rows":
+                    row_text = text
+                rows = []
+                for letter in range(len(row_text)):
+                    if letter % key_length == 0:
+                        rows.append(row_text[letter])
+                    else:
+                        rows[-1] += row_text[letter]
+                vowel_difference = 0
+                for index, row in enumerate(rows):
+                    vowel_count = 0
+                    for letter in row:
+                        if letter in vowels: vowel_count += 1
+                    vowel_difference += abs(vowel_rarity - vowel_count / len(row))
+                vowel_differences[key_length] = vowel_difference
+            output = ""
+            for index, key in enumerate(vowel_differences):
+                output += str(key) + ": " + str(round(vowel_differences[key], 2)) + "\n"
+        self.output.configure(text=output)
         return text

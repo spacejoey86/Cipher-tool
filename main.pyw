@@ -187,6 +187,7 @@ add(ana_menu, Triples)
 add(ana_menu, IoC)
 add(ana_menu, WordFinder)
 add(ana_menu, VigenereKeyword)
+add(ana_menu, ColumnarKeyword)
 menu.add_cascade(label="Analyse", menu=ana_menu)
 
 text_menu = tk.Menu(menu, tearoff=0)
