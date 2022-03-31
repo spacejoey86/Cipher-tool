@@ -58,7 +58,7 @@ class VigenereKeyword(Stage):
         self.updateFunction = updateFunction
         self.input_var = tk.StringVar(value="20")
         self.input = tk.Entry(frame, width=5, textvariable=self.input_var)
-        self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
+        Constants.writeTrace(self.input_var, lambda a, b, c, self=self : self.updateFunction())
         self.output = tk.Label(frame, text="")
     def display(self):
         self.input.grid(sticky="NW")
@@ -99,7 +99,7 @@ class WordFinder(Stage):
         self.input_var = tk.StringVar()
         self.input = tk.Entry(frame, width=20, textvariable=self.input_var)
         self.input.configure(font=('Courier New', 10)) #same font so it lines up with the output
-        self.input_var.trace_add("write", lambda a, b, c, self=self : self.updateFunction())
+        Constants.writeTrace(self.input_var, lambda a, b, c, self=self : self.updateFunction())
         self.output = tk.Label(frame, text="")
         self.output.configure(font=('Courier New', 10))
     def display(self):
