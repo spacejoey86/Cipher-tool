@@ -276,7 +276,13 @@ class ColumnarKeyword(Stage):
                     vowel_difference += abs(vowel_rarity - vowel_count / len(row))
                 vowel_differences[key_length] = vowel_difference
             output = ""
+
+            if vowel_differences[2] != 0:
+                multi = 100 / vowel_differences[2]
+            else:
+                multi = 1
             for index, key in enumerate(vowel_differences):
-                output += str(key) + ": " + str(round(vowel_differences[key], 2)) + "\n"
+                output += str(key) + ": " + str(round(vowel_differences[key] * multi, 2)) + "\n"
+                
         self.output.configure(text=output)
         return text
