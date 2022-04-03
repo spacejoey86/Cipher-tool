@@ -1,4 +1,5 @@
 import tkinter as tk
+import Constants
 from Constants import Stage
 
 class OutputHighlight(Stage):
@@ -7,7 +8,7 @@ class OutputHighlight(Stage):
         self.updateFunction = updateFunction
         self.frame = frame
         self.textVar = tk.StringVar()
-        self.textVar.trace_add("write", self.update)
+        Constants.writeTrace(self.textVar, self.update)
         self.textBox = tk.Entry(frame, width=20, textvariable=self.textVar)
     def update(self, a, b, c):
         self.updateFunction()
