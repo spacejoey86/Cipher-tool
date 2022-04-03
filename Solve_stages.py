@@ -12,7 +12,7 @@ class RailFence(Stage):
         self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
         self.key_length_string = tk.StringVar(value="2")
         self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length_string)
-        self.key_length_string.trace_add("write", lambda a, b, c : updateFunction())
+        Constants.writeTrace(self.key_length_string, lambda a, b, c : updateFunction())
         self.frame = frame
     def display(self):
         self.option_menu.grid(sticky="NW")
@@ -99,7 +99,7 @@ class Scytale(Stage):
         self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
         self.key_length_string = tk.StringVar(value="2")
         self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length_string)
-        self.key_length_string.trace_add("write", lambda a, b, c : updateFunction())
+        Constants.writeTrace(self.key_length_string, lambda a, b, c : updateFunction())
         self.frame = frame
     def display(self):
         tk.Grid.rowconfigure(self.frame, 0, weight=0)
@@ -331,7 +331,7 @@ class Vigenere(Stage):
     name = "Vigenere"
     def __init__(self, frame, updateFunction):
         self.keyVar = tk.StringVar()
-        self.keyVar.trace_add("write", lambda a,b,c : self.updateFunction())
+        Constants.writeTrace(self.keyVar, lambda a,b,c : self.updateFunction())
         self.keyEntry = tk.Entry(frame,width=15, textvariable=self.keyVar)
         self.updateFunction = updateFunction
     def display(self):
@@ -386,7 +386,7 @@ class Transposition(Stage): #this one is broken
         self.scroll = tk.Scrollbar(frame,orient="vertical",command=self.tree.yview)
         self.keyLabel = tk.Label(frame,text="Key length:")
         self.keyVar = tk.StringVar()
-        self.keyVar.trace_add("write", self.update)
+        Constants.writeTrace(self.keyVar, self.update)
         self.keyEntry = tk.Entry(frame,width=5, textvariable=self.keyVar)
         self.keyEntry.insert(0,"5")
         self.tree.configure(yscrollcommand = self.scroll.set)
