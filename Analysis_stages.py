@@ -286,3 +286,99 @@ class ColumnarKeyword(Stage):
                 
         self.output.configure(text=output)
         return text
+    
+class AffineKey(Stage):
+    name = "Affine Analysis"
+    
+    def __init__(self, frame, updateFunction):
+        self.substitutions = {}
+        self.updateFunction = updateFunction
+        
+        self.label_one = tk.Label(frame, text="Substitute")
+        self.label_two = tk.Label(frame, text="for")
+        self.result = tk.Label(frame, text="")
+        self.sub_entry_one = tk.Entry(frame, width=20)
+        self.sub_entry_two = tk.Entry(frame, width=20)
+        self.sub_entry_one.bind("<FocusIn>",lambda event:self.sub_entry_one.selection_range(0, tk.END))
+        self.sub_entry_two.bind("<FocusIn>",lambda event:self.sub_entry_two.selection_range(0, tk.END))
+        self.sub_button = tk.Button(frame, text="Substitute",command=self.substitute)
+        self.rev_button = tk.Button(frame, text="Un-substitute",command=self.unSubstitute,takefocus=0)
+        self.sub_display = tk.Label(frame,text="")
+        
+    def display(self):
+        self.label_one.grid(row=0,column=0)
+        self.label_two.grid(row=0,column=2)
+        self.result.grid(row=1,column=1)
+        self.sub_entry_one.grid(row=0,column=1)
+        self.sub_entry_two.grid(row=0,column=3)
+        self.sub_button.grid(row=0,column=4, padx=10)
+        self.rev_button.grid(row=1,column=4, padx=10)
+        self.sub_display.grid(row=0,column=5,rowspan=3)
+        
+    def decode(self, text):
+        output = "α = {}, β = {}."
+        a = 'unsolved'
+        b = 'unsolved'
+
+        substitutions = {} # Swaps key and value and has (at maximum) two items that when used in simultaneous equations make the coefficient of α have a multiplicitive inverse
+        for x in self.substitutions:
+            cur = Constants.alphabet.index(self.substitutions[x].upper())
+            try:
+                y = {x % 2: substitutions[x] for x in substitutions}[1 - cur % 2]
+                if abs(Constants.alphabet.index(self.substitutions[x].upper()) - Constants.alphabet.index(self.substitutions[y].upper())) != 13:
+                    if cur % 2 not in [x % 2 for x in substitutions]: substitutions[cur] = x
+            except:
+                if cur % 2 not in [x % 2 for x in substitutions]: substitutions[cur] = x
+
+        print(substitutions)
+        
+        if len({x % 2 for x in substitutions}) == 2:
+            e1 = [list(substitutions)[0], Constants.alphabet.index(substitutions[list(substitutions)[0]].upper())] # First equation
+            e2 = [list(substitutions)[1], Constants.alphabet.index(substitutions[list(substitutions)[1]].upper())] # Second equation
+            final = [(e1[0] - e2[0]) % 26, (e1[1] - e2[1]) % 26]
+            
+            a = str((final[1] * Constants.inverses[final[0]]) % 26)
+            b = str((e1[1] - e1[0] * int(a)) % 26)
+        
+        self.result.configure(text=output.format(a, b))
+        
+        display_text = ""
+        for letter in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
+            if letter in self.substitutions.keys():
+                display_text = display_text + letter + " -> " + self.substitutions[letter] + "\n"
+        self.sub_display.configure(text=display_text)
+        
+        return text
+    
+    def substitute(self):
+        phrase1 = self.sub_entry_one.get()
+        phrase2 = self.sub_entry_two.get()
+        
+        if len(phrase1) != len(phrase2):
+            self.sub_button.bell(displayof=0)
+        else:
+            for letter_index in range(len(phrase1)):
+                letter_1 = phrase1[letter_index]
+                letter_2 = phrase2[letter_index]
+                
+                if letter_1 in self.substitutions.keys():
+                    self.sub_button.bell(displayof=0)
+                elif letter_1 == letter_2:
+                    self.sub_button.bell(displayof=0)
+                else:
+                    self.substitutions[letter_1] = letter_2
+                    
+        self.updateFunction()
+        
+    def unSubstitute(self):
+        phrase1 = self.sub_entry_one.get()
+        phrase2 = self.sub_entry_two.get()
+        
+        if phrase1 == "":
+            self.substitutions = {key:val for key, val in self.substitutions.items() if val not in phrase2}
+        elif phrase2 == "":
+            self.substitutions = {key:val for key, val in self.substitutions.items() if key not in phrase1}
+        else:
+            self.substitutions = {key:val for key, val in self.substitutions.items() if (key not in phrase1) or (val not in phrase2)}
+            
+        self.updateFunction()
