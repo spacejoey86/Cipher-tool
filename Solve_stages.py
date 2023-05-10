@@ -3,29 +3,34 @@ from tkinter import ttk
 import Constants
 from Constants import Stage
 import math #For ceiling function (round up)
+from typing import Generator
 
 class RailFence(Stage):
     name = "Rail fence"
+
     def __init__(self, frame, updateFunction):
-        self.variations = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
+        self.variations; list = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
         self.variation_selection = tk.StringVar(frame, "Write vertically, read horizontally")
         self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
         self.key_length_string = tk.StringVar(value="2")
         self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length_string)
         Constants.writeTrace(self.key_length_string, lambda a, b, c : updateFunction())
-        self.frame = frame
+        self.frame: tk.Frame = frame
+
     def display(self):
         self.option_menu.grid(sticky="NW")
         self.key_length_input.grid(column=1, row=0, sticky="NW", padx=20)
         tk.Grid.rowconfigure(self.frame, 0, weight=0)
         tk.Grid.columnconfigure(self.frame, 0, weight=0)
-    def looping_counter(self, maximum): # A generator so the rails can be looped through in the right order
-        counter = [0, 0]
+
+    def looping_counter(self, maximum: int): # A generator so the rails can be looped through in the right order
+        counter: list[int] = [0, 0]
         while True:
             yield counter[1]
             counter[0] = (counter[0] + 1) % (maximum * 2 - 2)
             counter[1] = counter[0] - 2 * (counter[0] // maximum) * (counter[0] % maximum + 1)
-    def update_variables(self, text):
+
+    def update_variables(self, text: str) -> None:
         if self.key_length_string.get().isnumeric():
             self.rail_lengths = {}
             self.key_length = int(self.key_length_string.get())
@@ -43,9 +48,10 @@ class RailFence(Stage):
             counter = self.looping_counter(self.key_length)
             for i in range(self.extra_length): # This adds the extra length
                 self.rail_lengths[next(counter)] += 1
-    def write_horizontal(self, text):
+
+    def write_horizontal(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
-            output = ""
+            output: str = ""
             
             # Find the index of each letter in the ciphertext then add it to output
             for rail in range(self.key_length):
@@ -61,9 +67,9 @@ class RailFence(Stage):
                     output += text[int(letter_index)]
             text = output
         return text
-    def write_vertical(self, text):
+    def write_vertical(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
-            output = ""
+            output: str = ""
             
             # Find the index of each letter in the ciphertext then add it to output
             counter = self.looping_counter(self.key_length)
@@ -91,6 +97,7 @@ class RailFence(Stage):
             return self.write_vertical(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
+        
 class Scytale(Stage):
     name = "Scytale"
     def __init__(self, frame, updateFunction):
@@ -101,17 +108,20 @@ class Scytale(Stage):
         self.key_length_input = tk.Entry(frame, width=5, textvariable=self.key_length_string)
         Constants.writeTrace(self.key_length_string, lambda a, b, c : updateFunction())
         self.frame = frame
+
     def display(self):
         tk.Grid.rowconfigure(self.frame, 0, weight=0)
         tk.Grid.columnconfigure(self.frame, 0, weight=0)
         self.option_menu.grid(column=0, sticky="NW")
         self.key_length_input.grid(column=1, row=0, sticky="NW", padx=20)
-    def looping_counter(self, maximum): # A generator so the lines can be looped through in the right order
+
+    def looping_counter(self, maximum: int): # A generator so the lines can be looped through in the right order
                 counter = 0
                 while True:
                     yield counter % maximum
                     counter += 1
-    def update_variables(self, text):
+
+    def update_variables(self, text: str) -> None:
         if self.key_length_string.get().isnumeric():
             self.line_lengths = {}
             self.key_length = int(self.key_length_string.get())
@@ -127,9 +137,10 @@ class Scytale(Stage):
             counter = self.looping_counter(self.key_length)
             for i in range(self.extra_length): # This adds the extra length
                 self.line_lengths[next(counter)] += 1
-    def write_horizontal(self, text):
+
+    def write_horizontal(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
-            output = ""
+            output: str = ""
             
             # Find the index of each letter in the ciphertext then add it to output
             counter = self.looping_counter(self.key_length)
@@ -139,9 +150,10 @@ class Scytale(Stage):
                     output += text[letter_index]
             text = output
         return text
-    def write_vertical(self, text):
+    
+    def write_vertical(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
-            output = ""
+            output: str = ""
             
             # Find the index of each letter in the ciphertext then add it to output
             counter = self.looping_counter(self.key_length)
@@ -154,47 +166,55 @@ class Scytale(Stage):
                 output += text[letter_index]
             text = output
         return text
+    
     def decode(self, text):
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_horizontal(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_vertical(text)
+        
     def encode(self, text):
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_vertical(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
+        
 class CaesarShift(Stage):
     name = "Caesar shift"
+
     def __init__(self, frame, updateFunction):
         self.scale = tk.Scale(frame, from_=0,to=25,orient="horizontal",length=500,command=lambda idk:updateFunction())
         self.down_button = tk.Button(frame, text = " - ",command = lambda:self.scale.set(self.scale.get()-1))
         self.up_button = tk.Button(frame, text = " + ",command = lambda:self.scale.set(self.scale.get()+1))
         self.frame = frame
+
     def display(self):
         self.down_button.grid(row=1, column=0, sticky="NW")
         self.scale.grid(row=1, column=1, columnspan=2, sticky="NEW")
         self.up_button.grid(row=1, column=3, sticky="NW")
         tk.Grid.rowconfigure(self.frame, 0, weight=0)
         tk.Grid.columnconfigure(self.frame, 0, weight=0)
-    def encode(self, text):
-        shifted = ""
+
+    def encode(self, text: str) -> str:
+        shifted: str = ""
         for letter in text:
             if letter.upper() in Constants.alphabet: #lowercase to UPPERCASE
                 shifted += Constants.alphabet[((Constants.alphabet.index(letter.upper())+self.scale.get()+1)%26)-1]
             else:
                 shifted += letter
         return shifted
+    
     def decode(self, text):
-        shifted = ""
+        shifted: str = ""
         for letter in text:
             if letter in Constants.alphabet: #UPPER to lower
                 shifted += Constants.alphabet[((Constants.alphabet.index(letter)-self.scale.get()+1)%26)-1].lower()
             else:
                 shifted += letter
         return shifted
+    
 class Morse(Stage):
     name = "Morse code"
     dot = "."
@@ -205,7 +225,7 @@ class Morse(Stage):
     for key, value in morse_encode.items():
         morse_decode[value] = key
     def decode(self, text):
-        output_text = ""
+        output_text: str = ""
         for phrase in text.split(self.seperator):
             if phrase in self.morse_decode.keys():
                 output_text += self.morse_decode[phrase].lower()
@@ -218,6 +238,7 @@ class Morse(Stage):
         return output_text
     def encode(self, text):
         return " ".join([self.morse_encode[letter.upper()] if letter != letter.upper and letter.upper() in Constants.alphabet else letter for letter in text])
+    
 class Substitution(Stage):
     name = "Substitution"
     def __init__(self, frame, updateFunction):
@@ -250,7 +271,7 @@ class Substitution(Stage):
         for key, value in self.substitutions.items():
             text = text.replace(value,key)
         return text
-    def substitute(self):
+    def substitute(self) -> None:
         phrase1 = self.sub_entry_one.get()
         phrase2 = self.sub_entry_two.get()
         if len(phrase1) != len(phrase2):
@@ -267,13 +288,13 @@ class Substitution(Stage):
                     self.substitutions[letter_1] = letter_2
                     self.updateFunction()
         self.updateFunction()
-    def displaySubs(self, arrow):
-        display_text = ""
+    def displaySubs(self, arrow: str) -> None:
+        display_text: str = ""
         for letter in Constants.alphabet + [x.lower() for x in Constants.alphabet]:
             if letter in self.substitutions.keys():
                 display_text = display_text + letter + arrow + self.substitutions[letter] + "\n"
         self.sub_display.configure(text=display_text)
-    def unSubstitute(self):
+    def unSubstitute(self) -> None:
         s1 = self.sub_entry_one.get()
         s2 = self.sub_entry_two.get()
         if s1 == "":
@@ -283,6 +304,7 @@ class Substitution(Stage):
         else:
             self.substitutions = {key:val for key, val in self.substitutions.items() if (key not in s1) or (val not in s2)}
         self.updateFunction()
+
 class Affine(Stage):
     name = "Affine"
     def __init__(self, frame, updateFunction):
@@ -299,7 +321,7 @@ class Affine(Stage):
         self.aScale.grid()
         self.bLabel.grid()
         self.bScale.grid()
-    def cycle(self):
+    def cycle(self) -> None:
         if self.aScale.get() == 12:
             self.aScale.set(1)
             if self.bScale.get() == 25:
@@ -308,7 +330,7 @@ class Affine(Stage):
                 self.bScale.set(self.bScale.get()+1)
         else:
             self.aScale.set(self.aScale.get()+1)
-    def update(self, args):
+    def update(self, args) -> None:
         self.a = Constants.a_values[self.aScale.get()-1]
         self.aLabel.config(text=self.a)
         self.ia = Constants.inverses[self.a]
@@ -327,6 +349,7 @@ class Affine(Stage):
             rNum = Constants.alphabet[((self.ia*(lNum-self.b))%26)].lower()
             text = text.replace(letter,rNum)
         return text
+    
 class Vigenere(Stage):
     name = "Vigenere"
     def __init__(self, frame, updateFunction):
@@ -337,8 +360,8 @@ class Vigenere(Stage):
     def display(self):
         self.keyEntry.grid()
     def encode(self, text):
-        output_text = ""
-        key_index = 0
+        output_text: str = ""
+        key_index: int = 0
         key = self.keyVar.get()
         if len(self.keyVar.get()) == 0: #Ignore if the key box is empty
             return text
