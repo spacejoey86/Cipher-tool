@@ -1,7 +1,8 @@
 import tkinter as tk
 import Constants
-from Constants import Stage
+from Constants import Stage, register
 
+@register("Output")
 class OutputHighlight(Stage):
     name = "Highlight"
     def __init__(self, frame, updateFunction):
@@ -30,6 +31,8 @@ class OutputHighlight(Stage):
             textRef.tag_add("highlight", pos, index2)
     def display(self):
         self.textBox.grid()
+        
+@register("Output")
 class Blank(Stage):
     name = "Blank"
     def decode(self, text):

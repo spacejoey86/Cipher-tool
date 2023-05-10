@@ -1,10 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
 
-from Solve_stages import *
-from Text_stages import *
-from Analysis_stages import *
-from Output import *
+from Constants import menus, Input, Stage
+from plugins import *
+
 
 root = tk.Tk()
 root.title("Cipher program")
@@ -140,7 +139,7 @@ tk.Grid.rowconfigure(root, 1, weight=0)
 tk.Grid.columnconfigure(stage_editor, 0, weight=1)
 tk.Grid.rowconfigure(stage_editor, 0, weight=1)
 
-#==========
+#========== Make the menus
 def add(menu, StageClass) -> None: #Helper function to make adding stages neater
     menu.add_command(label= StageClass.name,#Takes the name from the class
                      command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
@@ -182,63 +181,31 @@ def copyCom() -> None:
     root.clipboard_append(text)
     root.update()
 
-
-menu: tk.Menu = tk.Menu(root)
-file_menu: tk.Menu = tk.Menu(menu, tearoff=0)
-file_menu.add_command(label="Open", command=openCom)
-file_menu.add_command(label="Clear", command = clearCom)
-file_menu.add_command(label="Save", command=saveCom)
-file_menu.add_command(label="Copy output", command=copyCom)
-menu.add_cascade(label="File", menu = file_menu)
-
-ana_menu: tk.Menu = tk.Menu(menu, tearoff=0)
-add(ana_menu, Length)
-add(ana_menu, PlayfairDetect)
-add(ana_menu, FrequencyAnalyse)
-add(ana_menu, Doubles)
-add(ana_menu, Triples)
-add(ana_menu, IoC)
-add(ana_menu, WordFinder)
-add(ana_menu, VigenereKeyword)
-menu.add_cascade(label="Analyse", menu=ana_menu)
-
-text_menu: tk.Menu = tk.Menu(menu, tearoff=0)
-add(text_menu, Capitalise)
-add(text_menu, Lowercase)
-add(text_menu, Swapcase)
-add(text_menu, Strip)
-add(text_menu, RemoveSpaces)
-add(text_menu, Reverse)
-add(text_menu, Block)
-menu.add_cascade(label="Text stage", menu=text_menu)
-
-solve_menu: tk.Menu = tk.Menu(menu, tearoff=0)
-add(solve_menu, CaesarShift)
-add(solve_menu, Substitution)
-add(solve_menu, Affine)
-add(solve_menu, Vigenere)
-#add(solve_menu, Transposition) #this one doesn't work
-add(solve_menu, RailFence)
-add(solve_menu, Scytale)
-add(solve_menu, Morse)
-menu.add_cascade(label="Solve stage", menu=solve_menu)
-
-#Functions for the output menu operations
 def changeFontSize(change) -> None:
     currentSize: int = int(right_text.cget("font").split(" ")[1])
     right_text.config(font=("Courier", currentSize + change))
     stages[0].textbox.config(font=("Courier", currentSize + change))
 
-output_menu: tk.Menu = tk.Menu(menu, tearoff=0)
-add(output_menu, OutputHighlight)
-add(output_menu, Blank)
-output_menu.add_command(label="Increase font size", command=lambda:changeFontSize(1))
-output_menu.add_command(label="Decrease font size", command=lambda:changeFontSize(-1))
+main_menu: tk.Menu = tk.Menu(root)
+
+file_menu: tk.Menu = tk.Menu(main_menu, tearoff=0)
+file_menu.add_command(label="Open", command=openCom)
+file_menu.add_command(label="Clear", command = clearCom)
+file_menu.add_command(label="Save", command=saveCom)
+file_menu.add_command(label="Copy output", command=copyCom)
+file_menu.add_command(label="Increase output font size", command=lambda:changeFontSize(1))
+file_menu.add_command(label="Decrease output font size", command=lambda:changeFontSize(-1))
+main_menu.add_cascade(label="File", menu = file_menu)
+
+for menu in menus.keys():
+    new_menu = tk.Menu(main_menu, tearoff=0)
+    for stage_class in menus[menu]:
+        add(new_menu, stage_class)
+    main_menu.add_cascade(label=menu, menu=new_menu)
 
 right_text.tag_configure("highlight", foreground = "red")
-menu.add_cascade(label="Output", menu=output_menu)
 
-root.config(menu=menu)
+root.config(menu=main_menu)
 
 addStage(Input(stage_editor, updateOutputText))
 

@@ -1,7 +1,8 @@
 import tkinter as tk
 import Constants
-from Constants import Stage
+from Constants import Stage, register
 
+@register("Analyse")
 class Length(Stage):
     name = "Length"
     output = None
@@ -14,6 +15,8 @@ class Length(Stage):
     def decode(self, text):
         self.output.configure(text="Length = " + str(len(text)))
         return text
+    
+@register("Analyse")
 class PlayfairDetect(Stage):
     name = "Detect Playfair"
     output = None
@@ -34,6 +37,8 @@ class PlayfairDetect(Stage):
         else:
             self.output.configure(text="Doubles not found, this could be a Playfair cipher")
         return text
+    
+@register("Analyse")
 class IoC(Stage):
     name = "Index of Coincedence"
     def __init__(self, frame, updateFunction):
@@ -51,6 +56,8 @@ class IoC(Stage):
             IoC = "Failed: length cannot be 0 or 1"
         self.output_label.configure(text="IoC = " + str(IoC))
         return text
+    
+@register("Analyse")
 class VigenereKeyword(Stage):
     name = "Vigenere keyword length"
     def __init__(self, frame, updateFunction):
@@ -90,6 +97,8 @@ class VigenereKeyword(Stage):
                 outputText += str(currentKey) + " : " + str(round(sum(tempIC) / len(tempIC), 3)) + "\n"
             self.output.configure(text=outputText)
         return text
+    
+@register("Analyse")
 class WordFinder(Stage):
     name = "Word Finder"
     output = None
@@ -148,6 +157,8 @@ class WordFinder(Stage):
             output = ""
         self.output.configure(text=output)
         return text
+    
+@register("Analyse")
 class FrequencyAnalyse(Stage):
     name = "Frequency analysis"
     output = None
@@ -166,6 +177,8 @@ class FrequencyAnalyse(Stage):
             output_text += letter + " = " + str(frequency[letter]) + "\n"
         self.output.configure(text=output_text)
         return text
+    
+@register("Analyse")
 class Doubles(Stage):
     name = "Bigram frequencies"
     def __init__(self, frame, updateFunction):
@@ -194,6 +207,8 @@ class Doubles(Stage):
             output_text += letter + " = " + str(frequency[letter]) + "\n"
         self.output.configure(text=output_text)
         return text
+    
+@register("Analyse")
 class Triples(Stage):
     name = "Trigram frequencies"
     def __init__(self, frame, updateFunction):

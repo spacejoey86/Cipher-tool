@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 import Constants
-from Constants import Stage
+from Constants import Stage, register
 import math #For ceiling function (round up)
 from typing import Generator
 
+@register("Solve")
 class RailFence(Stage):
     name = "Rail fence"
 
@@ -98,6 +99,7 @@ class RailFence(Stage):
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
         
+@register("Solve")
 class Scytale(Stage):
     name = "Scytale"
     def __init__(self, frame, updateFunction):
@@ -181,6 +183,7 @@ class Scytale(Stage):
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
         
+@register("Solve")
 class CaesarShift(Stage):
     name = "Caesar shift"
 
@@ -215,6 +218,7 @@ class CaesarShift(Stage):
                 shifted += letter
         return shifted
     
+@register("Solve")
 class Morse(Stage):
     name = "Morse code"
     dot = "."
@@ -239,6 +243,7 @@ class Morse(Stage):
     def encode(self, text):
         return " ".join([self.morse_encode[letter.upper()] if letter != letter.upper and letter.upper() in Constants.alphabet else letter for letter in text])
     
+@register("Solve")
 class Substitution(Stage):
     name = "Substitution"
     def __init__(self, frame, updateFunction):
@@ -305,6 +310,7 @@ class Substitution(Stage):
             self.substitutions = {key:val for key, val in self.substitutions.items() if (key not in s1) or (val not in s2)}
         self.updateFunction()
 
+@register("Solve")
 class Affine(Stage):
     name = "Affine"
     def __init__(self, frame, updateFunction):
@@ -350,6 +356,7 @@ class Affine(Stage):
             text = text.replace(letter,rNum)
         return text
     
+@register("Solve")
 class Vigenere(Stage):
     name = "Vigenere"
     def __init__(self, frame, updateFunction):
@@ -399,6 +406,8 @@ class Vigenere(Stage):
             else:
                 output_text += letter
         return output_text
+    
+#@register("Solve")
 class Transposition(Stage): #this one is broken
     name = "Transposition"
     def __init__(self, frame, updateFunction):
