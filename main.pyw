@@ -4,12 +4,6 @@ from tkinter import filedialog
 from Constants import menus, Input, Stage
 from plugins import *
 
-
-root = tk.Tk()
-root.title("Cipher program")
-root.geometry("1500x500")
-root.state("zoomed") #apparently windows only
-
 def getOutputText() -> str:
     text: str = ""
     for stage in stages:
@@ -34,29 +28,12 @@ def updateStageEditor() -> None:
     stages[selected_stage.get()].display()
     root.focus_set()
 
-stage_editor: tk.Frame = tk.Frame(root, width=10, height=10) #Size is the same as right_text, they will expand equally to fill the space
-stage_editor.grid(row=0, column=0, rowspan=4, sticky="NESW")
-stage_editor.grid_propagate(0) #stops the contents of the window affecting the size
-
-stages: list = []
 def addStage(stage) -> None:
     stages.append(stage)
     updateStagesFrame()
     stages[len(stages)-1].button.select() #select the newly added stage
     updateStageEditor()
     updateOutputText()
-
-selected_stage: tk.IntVar = tk.IntVar()
-stages_frame: tk.Frame = tk.Frame(root)
-stages_frame.grid(row=0, column=1, sticky="NS", columnspan=3)
-
-#Radiobuttons to select between encode and decode
-decode_var: tk.IntVar = tk.IntVar()
-decodeBox: tk.Radiobutton = tk.Radiobutton(root, text="Decode", variable=decode_var,value=-1,command=updateOutputText)
-encodeBox: tk.Radiobutton = tk.Radiobutton(root, text="Encode", variable=decode_var,value=1,command=updateOutputText)
-decode_var.set(-1) #set to decode as default
-decodeBox.grid(row=1,column=1,columnspan=3)
-encodeBox.grid(row=2,column=1,columnspan=3)
 
 #Up, Delete, and Down buttons
 def stageUp() -> None:
@@ -81,13 +58,6 @@ def deleteStage() -> None:
         updateStageEditor()
         updateOutputText()
 
-stage_up_button: tk.Button = tk.Button(root, text = "↑",command=stageUp,takefocus=0)
-stage_delete_button: tk.Button = tk.Button(root, text = "×",command=deleteStage,takefocus=0)
-stage_down_button: tk.Button = tk.Button(root, text = "↓",command=stageDown,takefocus=0)
-stage_up_button.grid(row=3, column=1, sticky="ESW")
-stage_delete_button.grid(row=3,column=2, sticky="ESW")
-stage_down_button.grid(row=3, column=3, sticky="ESW")
-
 #Shortcuts for selecting the next and previous stage
 def stageSelectUp(event) -> None:
     if selected_stage.get() > 0:
@@ -100,12 +70,6 @@ def stageSelectDown(event) -> None:
         selected_stage.set(selected_stage.get()+1)
     updateStagesFrame()
     updateStageEditor()
-
-root.bind("<Control-Tab>", stageSelectUp)
-root.bind("<Control-Shift-Tab>", stageSelectDown)
-root.bind("<Control-Prior>", stageSelectUp)     #Control + page up
-root.bind("<Control-Next>", stageSelectDown)    #Control + page down
-
 
 def updateStagesFrame() -> None:
     for button in stages_frame.winfo_children():
@@ -122,24 +86,7 @@ def updateStagesFrame() -> None:
             stage.checkbox.config(state="disabled")
         stage.button.grid(column=1, row=stage_index)
         stage.checkbox.grid(column=0, row=stage_index)
-updateStagesFrame()
 
-
-right_text: tk.Text = tk.Text(root, takefocus=0, width=10, height=10, font=("Courier", 10))
-right_text.grid(row=0, column=4, rowspan=4, sticky="NESW")
-right_text.grid_propagate(0)
-
-tk.Grid.columnconfigure(root, 0, weight=1)
-tk.Grid.columnconfigure(root, 1, weight=0)
-tk.Grid.columnconfigure(root, 2, weight=0)
-tk.Grid.columnconfigure(root, 3, weight=0)
-tk.Grid.columnconfigure(root, 4, weight=1)
-tk.Grid.rowconfigure(root, 0, weight=1)
-tk.Grid.rowconfigure(root, 1, weight=0)
-tk.Grid.columnconfigure(stage_editor, 0, weight=1)
-tk.Grid.rowconfigure(stage_editor, 0, weight=1)
-
-#========== Make the menus
 def add(menu, StageClass) -> None: #Helper function to make adding stages neater
     menu.add_command(label= StageClass.name,#Takes the name from the class
                      command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
@@ -186,6 +133,55 @@ def changeFontSize(change) -> None:
     right_text.config(font=("Courier", currentSize + change))
     stages[0].textbox.config(font=("Courier", currentSize + change))
 
+root = tk.Tk()
+root.title("Cipher program")
+root.geometry("1500x500")
+root.state("zoomed") #apparently windows only
+
+stage_editor: tk.Frame = tk.Frame(root, width=10, height=10) #Size is the same as right_text, they will expand equally to fill the space
+stage_editor.grid(row=0, column=0, rowspan=4, sticky="NESW")
+stage_editor.grid_propagate(0) #stops the contents of the window affecting the size
+
+stages: list = []
+selected_stage: tk.IntVar = tk.IntVar()
+stages_frame: tk.Frame = tk.Frame(root)
+stages_frame.grid(row=0, column=1, sticky="NS", columnspan=3)
+
+#Radiobuttons to select between encode and decode
+decode_var: tk.IntVar = tk.IntVar()
+decodeBox: tk.Radiobutton = tk.Radiobutton(root, text="Decode", variable=decode_var,value=-1,command=updateOutputText)
+encodeBox: tk.Radiobutton = tk.Radiobutton(root, text="Encode", variable=decode_var,value=1,command=updateOutputText)
+decode_var.set(-1) #set to decode as default
+decodeBox.grid(row=1,column=1,columnspan=3)
+encodeBox.grid(row=2,column=1,columnspan=3)
+
+stage_up_button: tk.Button = tk.Button(root, text = "↑",command=stageUp,takefocus=0)
+stage_delete_button: tk.Button = tk.Button(root, text = "×",command=deleteStage,takefocus=0)
+stage_down_button: tk.Button = tk.Button(root, text = "↓",command=stageDown,takefocus=0)
+stage_up_button.grid(row=3, column=1, sticky="ESW")
+stage_delete_button.grid(row=3,column=2, sticky="ESW")
+stage_down_button.grid(row=3, column=3, sticky="ESW")
+
+root.bind("<Control-Tab>", stageSelectUp)
+root.bind("<Control-Shift-Tab>", stageSelectDown)
+root.bind("<Control-Prior>", stageSelectUp)     #Control + page up
+root.bind("<Control-Next>", stageSelectDown)    #Control + page down
+
+right_text: tk.Text = tk.Text(root, takefocus=0, width=10, height=10, font=("Courier", 10))
+right_text.grid(row=0, column=4, rowspan=4, sticky="NESW")
+right_text.grid_propagate(0)
+right_text.tag_configure("highlight", foreground = "red")
+
+tk.Grid.columnconfigure(root, 0, weight=1)
+tk.Grid.columnconfigure(root, 1, weight=0)
+tk.Grid.columnconfigure(root, 2, weight=0)
+tk.Grid.columnconfigure(root, 3, weight=0)
+tk.Grid.columnconfigure(root, 4, weight=1)
+tk.Grid.rowconfigure(root, 0, weight=1)
+tk.Grid.rowconfigure(root, 1, weight=0)
+tk.Grid.columnconfigure(stage_editor, 0, weight=1)
+tk.Grid.rowconfigure(stage_editor, 0, weight=1)
+
 main_menu: tk.Menu = tk.Menu(root)
 
 file_menu: tk.Menu = tk.Menu(main_menu, tearoff=0)
@@ -202,8 +198,6 @@ for menu in menus.keys():
     for stage_class in menus[menu]:
         add(new_menu, stage_class)
     main_menu.add_cascade(label=menu, menu=new_menu)
-
-right_text.tag_configure("highlight", foreground = "red")
 
 root.config(menu=main_menu)
 
