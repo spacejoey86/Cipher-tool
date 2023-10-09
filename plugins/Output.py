@@ -13,7 +13,7 @@ class OutputHighlight(Stage):
         self.textBox = tk.Entry(frame, width=20, textvariable=self.textVar)
     def update(self, a, b, c):
         self.updateFunction()
-    def updateOutputWidget(self, text, textRef):
+    def updateOutputWidget(self, text: str, textRef: tk.Text):
         word = self.textVar.get()
         countVar = tk.IntVar()
         start = "1.0"
@@ -35,7 +35,7 @@ class OutputHighlight(Stage):
 @register("Output")
 class Blank(Stage):
     name = "Blank"
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         blanked = ""
         for character in text:
             if character.upper() == character:

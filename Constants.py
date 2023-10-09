@@ -1,11 +1,12 @@
 import sys
 import tkinter as tk
-from typing import Callable, Any
+from typing import Callable, Any, Type
 import functools
 
-alphabet: list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-inverses: list = {1:1,3:9,5:21,7:15,9:3,11:19,15:7,17:23,19:11,21:5,23:17,25:25}
-a_values: list = [1,3,5,7,9,11,15,17,19,21,23,25]
+
+alphabet: list[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+inverses: dict[int, int] = {1:1,3:9,5:21,7:15,9:3,11:19,15:7,17:23,19:11,21:5,23:17,25:25}
+a_values: list[int] = [1,3,5,7,9,11,15,17,19,21,23,25]
 
 
 def writeTrace(variable: tk.Variable, callback: Callable[[Any, Any, Any], Any]) -> None:
@@ -14,7 +15,6 @@ def writeTrace(variable: tk.Variable, callback: Callable[[Any, Any, Any], Any]) 
     else:
         variable.trace_add("write", callback)
 
-menus = {}
 
 def register(menu: str):
     def wrap(stage_class):
@@ -24,10 +24,14 @@ def register(menu: str):
         return stage_class
     return wrap
 
+
 # use this decorator to register every stage to a certain menu. You can call the menu anything you like and it will create a new menu
 # @register("test")
 class Stage:
     name: str = "stage name" #Set the name of your stage here
+    button: tk.Radiobutton
+    check_var: tk.BooleanVar
+    checkbox: tk.Checkbutton
     def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]) -> None: #should create all the widgets with frame as root
         self.updateFunction = updateFunction #and save updateFunction, and frame if needed (needed when adding more widgets later)
     def decode(self, text: str) -> str: #This should always return some text. If there is an invalid input, it should return the original text without changes.
@@ -39,10 +43,12 @@ class Stage:
     def updateOutputWidget(self, text: str, textRef: tk.Text) -> None: #called after all the text is processed, for changing text colours etc
         pass
 
+menus: dict[str, list[Type[Stage]]] = {}
+
 class Input(Stage):
     name = "Input"
     menu = None
-    textbox: tk.Text = None
+    textbox: tk.Text
 
     def onModify(self, event: tk.Event) -> None:
         try:
@@ -61,5 +67,5 @@ class Input(Stage):
         tk.Grid.rowconfigure(self.frame, 0, weight=1)
         tk.Grid.columnconfigure(self.frame, 0, weight=1)
 
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         return self.textbox.get("1.0",tk.END).rstrip("\n")

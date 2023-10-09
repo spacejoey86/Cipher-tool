@@ -5,28 +5,28 @@ from Constants import Stage, register
 @register("Analyse")
 class Length(Stage):
     name = "Length"
-    output = None
+    output: tk.Label
     def __init__(self, frame, updateFunction):
         self.frame = frame
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         self.output.configure(text="Length = " + str(len(text)))
         return text
 
 @register("Analyse")
 class PlayfairDetect(Stage):
     name = "Detect Playfair"
-    output = None
+    output: tk.Label
     def __init__(self, frame, updateFunction):
         self.frame = frame
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         doubles = False
         for i in range(len(text)//2):
             if text[i] == text[i+1]:
@@ -46,7 +46,7 @@ class IoC(Stage):
         self.output_label = tk.Label(frame, text="")
     def display(self):
         self.output_label.grid(sticky="NW")
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         o = sum([f*(f-1) for f in [text.count(letter) + text.count(letter.lower()) for letter in Constants.alphabet]])
         length = sum([1 for letter in text if letter in Constants.alphabet or letter.upper() in Constants.alphabet])
         r = length * (length - 1)
@@ -74,7 +74,7 @@ class VigenereKeyword(Stage):
         self.frame.rowconfigure(1, weight=0)
         self.frame.columnconfigure(0, weight=0)
         self.frame.columnconfigure(1, weight=0)
-    def IC(self, text):
+    def IC(self, text: str) -> str:
         length = len(text)
         frequency = {}
         a = 0.0
@@ -84,13 +84,13 @@ class VigenereKeyword(Stage):
             a += frequency[letter] * (frequency[letter] - 1)
         IC = a / (length * (length - 1))
         return round(IC, 5)
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         if self.input.get().isnumeric():
             outputText = ""
             for currentKey in range(2, int(self.input.get()) + 1):
                 tempIC = []
                 for i in range(currentKey):
-                    tempText = []
+                    tempText: list[str] = []
                     for letter in range(i, len(text), currentKey):
                         tempText.append(text[letter])
                     tempIC.append(self.IC(tempText))
@@ -118,7 +118,7 @@ class WordFinder(Stage):
         self.frame.rowconfigure(1, weight=0)
         self.frame.columnconfigure(0, weight=0)
         self.frame.columnconfigure(1, weight=0)
-    def changeformat(self, text): #returns an identifier representing where there are repeated letters in the string (but not what letters they are)
+    def changeformat(self, text: str) -> str: #returns an identifier representing where there are repeated letters in the string (but not what letters they are)
         nextLetter = 0
         outputText = []
         for index, letter in enumerate(text):
@@ -136,7 +136,7 @@ class WordFinder(Stage):
                 else:
                     outputText.append(outputText[repeated])
         return outputText
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         #self.input needs to have repeated letters, else it will match everything. add status bar message
         matches = {}
         for index, letter in enumerate(text):
@@ -161,15 +161,15 @@ class WordFinder(Stage):
 @register("Analyse")
 class FrequencyAnalyse(Stage):
     name = "Frequency analysis"
-    output = None
+    output: tk.Label
     def __init__(self, frame, updateFunction):
         self.frame = frame
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
     def display(self):
         self.output.grid(sticky="NW")
-    def decode(self, text):
-        frequency = {}
+    def decode(self, text: str) -> str:
+        frequency: dict[str, float] = {}
         for letter in set(text):
             frequency[letter] = round(text.count(letter)/len(text)*100, 2)
         output_text = ""
@@ -198,8 +198,8 @@ class Doubles(Stage):
         self.frame2.grid(sticky="NSW")
         self.canvas.grid(sticky="NS")
         self.scroll.grid(sticky="NS", column=1, row=0)
-    def decode(self, text):
-        frequency = {}
+    def decode(self, text: str) -> str:
+        frequency: dict[str, float] = {}
         for letter in set(text[i]+text[i+1] for i in range(len(text)-1)):
             frequency[letter] = round(text.count(letter)/len(text)*100, 2)
         output_text = ""
@@ -228,8 +228,8 @@ class Triples(Stage):
         self.frame2.grid(sticky="NSW")
         self.canvas.grid(sticky="NS")
         self.scroll.grid(sticky="NS", column=1, row=0)
-    def decode(self, text):
-        frequency = {}
+    def decode(self, text: str) -> str:
+        frequency: dict[str, float] = {}
         for letter in set(text[i]+text[i+1]+text[i+2] for i in range(len(text)-2)):
             frequency[letter] = round(text.count(letter)/len(text)*100, 2)
         output_text = ""

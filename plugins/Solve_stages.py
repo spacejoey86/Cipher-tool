@@ -10,7 +10,7 @@ class RailFence(Stage):
     name = "Rail fence"
 
     def __init__(self, frame, updateFunction):
-        self.variations; list = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
+        self.variations: list[str] = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
         self.variation_selection = tk.StringVar(frame, "Write vertically, read horizontally")
         self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
         self.key_length_string = tk.StringVar(value="2")
@@ -33,7 +33,7 @@ class RailFence(Stage):
 
     def update_variables(self, text: str) -> None:
         if self.key_length_string.get().isnumeric():
-            self.rail_lengths = {}
+            self.rail_lengths: dict[int, int] = {}
             self.key_length = int(self.key_length_string.get())
 
             # The text is a number of complete cycles, plus an extra length
@@ -47,7 +47,7 @@ class RailFence(Stage):
                     self.rail_lengths[rail_index] = self.rail_lengths[rail_index] // 2
 
             counter = self.looping_counter(self.key_length)
-            for i in range(self.extra_length): # This adds the extra length
+            for _ in range(self.extra_length): # This adds the extra length
                 self.rail_lengths[next(counter)] += 1
 
     def write_horizontal(self, text: str) -> str:
@@ -86,18 +86,22 @@ class RailFence(Stage):
                 output += text[letter_index]
             text = output
         return text
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_horizontal(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_vertical(text)
-    def encode(self, text):
+        else: #on error, return the input
+            return text
+    def encode(self, text: str) -> str:
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_vertical(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
+        else: #error case
+            return text
 
 @register("Solve")
 class Scytale(Stage):
@@ -125,7 +129,7 @@ class Scytale(Stage):
 
     def update_variables(self, text: str) -> None:
         if self.key_length_string.get().isnumeric():
-            self.line_lengths = {}
+            self.line_lengths: dict[int, int] = {}
             self.key_length = int(self.key_length_string.get())
 
             # The text is a number of complete cycles, plus an extra length
@@ -137,7 +141,7 @@ class Scytale(Stage):
                 self.line_lengths[line_index] = (len(text) - self.extra_length) // (self.key_length)
 
             counter = self.looping_counter(self.key_length)
-            for i in range(self.extra_length): # This adds the extra length
+            for _ in range(self.extra_length): # This adds the extra length
                 self.line_lengths[next(counter)] += 1
 
     def write_horizontal(self, text: str) -> str:
@@ -169,19 +173,23 @@ class Scytale(Stage):
             text = output
         return text
 
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_horizontal(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_vertical(text)
+        else:
+            return text
 
-    def encode(self, text):
+    def encode(self, text: str) -> str:
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_vertical(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
+        else:
+            return text
 
 @register("Solve")
 class CaesarShift(Stage):
@@ -204,16 +212,16 @@ class CaesarShift(Stage):
         shifted: str = ""
         for letter in text:
             if letter.upper() in Constants.alphabet: #lowercase to UPPERCASE
-                shifted += Constants.alphabet[((Constants.alphabet.index(letter.upper())+self.scale.get()+1)%26)-1]
+                shifted += Constants.alphabet[int((Constants.alphabet.index(letter.upper())+self.scale.get()+1)%26)-1]
             else:
                 shifted += letter
         return shifted
 
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         shifted: str = ""
         for letter in text:
             if letter in Constants.alphabet: #UPPER to lower
-                shifted += Constants.alphabet[((Constants.alphabet.index(letter)-self.scale.get()+1)%26)-1].lower()
+                shifted += Constants.alphabet[int((Constants.alphabet.index(letter)-self.scale.get()+1)%26)-1].lower()
             else:
                 shifted += letter
         return shifted
@@ -228,7 +236,7 @@ class Morse(Stage):
     morse_decode = {" ": "", "":""}
     for key, value in morse_encode.items():
         morse_decode[value] = key
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         output_text: str = ""
         for phrase in text.split(self.seperator):
             if phrase in self.morse_decode.keys():
@@ -240,14 +248,14 @@ class Morse(Stage):
             else:
                 output_text += phrase
         return output_text
-    def encode(self, text):
-        return " ".join([self.morse_encode[letter.upper()] if letter != letter.upper and letter.upper() in Constants.alphabet else letter for letter in text])
+    def encode(self, text: str) -> str:
+        return " ".join([self.morse_encode[letter.upper()] if letter != letter.upper() and letter.upper() in Constants.alphabet else letter for letter in text])
 
 @register("Solve")
 class Substitution(Stage):
     name = "Substitution"
     def __init__(self, frame, updateFunction):
-        self.substitutions = {}
+        self.substitutions: dict[str, str] = {}
         self.label_one = tk.Label(frame, text="Substitute")
         self.sub_entry_one = tk.Entry(frame, width=20)
         self.sub_entry_one.bind("<FocusIn>",lambda event:self.sub_entry_one.selection_range(0, tk.END))
@@ -266,12 +274,12 @@ class Substitution(Stage):
         self.sub_button.grid(row=0,column=4, padx=10)
         self.rev_button.grid(row=1,column=4, padx=10)
         self.sub_display.grid(row=0,column=5,rowspan=3)
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         self.displaySubs(" -> ")
         for key, value in self.substitutions.items():
             text = text.replace(key,value)
         return text
-    def encode(self, text):
+    def encode(self, text: str) -> str:
         self.displaySubs(" <- ")
         for key, value in self.substitutions.items():
             text = text.replace(value,key)
@@ -336,20 +344,20 @@ class Affine(Stage):
                 self.bScale.set(self.bScale.get()+1)
         else:
             self.aScale.set(self.aScale.get()+1)
-    def update(self, args) -> None:
+    def update(self, _) -> None:
         self.a = Constants.a_values[self.aScale.get()-1]
         self.aLabel.config(text=self.a)
         self.ia = Constants.inverses[self.a]
         self.b = self.bScale.get()
         self.bLabel.config(text=self.b)
         self.updateFunction()
-    def encode(self, text):
+    def encode(self, text: str) -> str:
         for letter in Constants.alphabet:
             lNum = Constants.alphabet.index(letter)
             rNum = Constants.alphabet[((self.a*lNum+self.b)%26)].upper()
             text = text.replace(letter.lower(),rNum)
         return text
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         for letter in Constants.alphabet:
             lNum = Constants.alphabet.index(letter)
             rNum = Constants.alphabet[((self.ia*(lNum-self.b))%26)].lower()
@@ -366,7 +374,7 @@ class Vigenere(Stage):
         self.updateFunction = updateFunction
     def display(self):
         self.keyEntry.grid()
-    def encode(self, text):
+    def encode(self, text: str) -> str:
         output_text: str = ""
         key_index: int = 0
         key = self.keyVar.get()
@@ -386,7 +394,7 @@ class Vigenere(Stage):
             else:
                 output_text += letter
         return output_text
-    def decode(self, text):
+    def decode(self, text: str) -> str:
         output_text = ""
         key_index = 0
         key = self.keyVar.get()

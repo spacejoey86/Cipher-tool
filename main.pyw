@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import os
+from typing import Type
 
 from Constants import menus, Input, Stage
 from plugins import *
@@ -29,7 +30,7 @@ def updateStageEditor() -> None:
     stages[selected_stage.get()].display()
     root.focus_set()
 
-def addStage(stage) -> None:
+def addStage(stage: Stage) -> None:
     stages.append(stage)
     updateStagesFrame()
     stages[len(stages)-1].button.select() #select the newly added stage
@@ -60,13 +61,13 @@ def deleteStage() -> None:
         updateOutputText()
 
 #Shortcuts for selecting the next and previous stage
-def stageSelectUp(event) -> None:
+def stageSelectUp(_) -> None:
     if selected_stage.get() > 0:
         selected_stage.set(selected_stage.get()-1)
     updateStagesFrame()
     updateStageEditor()
 
-def stageSelectDown(event) -> None:
+def stageSelectDown(_) -> None:
     if selected_stage.get() < len(stages) - 1:
         selected_stage.set(selected_stage.get()+1)
     updateStagesFrame()
@@ -78,7 +79,7 @@ def updateStagesFrame() -> None:
     for stage_index in range(len(stages)):
         stage: Stage = stages[stage_index]
         stage.button = tk.Radiobutton(stages_frame, text=stage.name, variable = selected_stage, value = stage_index, command=updateStageEditor,
-                                      indicatoron = 0, width = 20, takefocus=0)
+                                      indicatoron = False, width = 20, takefocus=0)
         stage.check_var = tk.BooleanVar()
         stage.check_var.set(True)
         stage.checkbox = tk.Checkbutton(stages_frame, variable = stage.check_var, command=updateOutputText, takefocus=0)
@@ -88,7 +89,7 @@ def updateStagesFrame() -> None:
         stage.button.grid(column=1, row=stage_index)
         stage.checkbox.grid(column=0, row=stage_index)
 
-def add(menu, StageClass) -> None: #Helper function to make adding stages neater
+def add(menu: tk.Menu, StageClass: Type[Stage]) -> None: #Helper function to make adding stages neater
     menu.add_command(label= StageClass.name,#Takes the name from the class
                      command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
                                                         updateOutputText))) #and a callback for when things change and the output text needs updating
@@ -142,9 +143,9 @@ if os.name == "nt":
 
 stage_editor: tk.Frame = tk.Frame(root, width=10, height=10) #Size is the same as right_text, they will expand equally to fill the space
 stage_editor.grid(row=0, column=0, rowspan=4, sticky="NESW")
-stage_editor.grid_propagate(0) #stops the contents of the window affecting the size
+stage_editor.grid_propagate(False) #stops the contents of the window affecting the size
 
-stages: list = []
+stages: list[Stage] = []
 selected_stage: tk.IntVar = tk.IntVar()
 stages_frame: tk.Frame = tk.Frame(root)
 stages_frame.grid(row=0, column=1, sticky="NS", columnspan=3)
