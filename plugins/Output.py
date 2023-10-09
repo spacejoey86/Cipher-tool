@@ -1,11 +1,12 @@
 import tkinter as tk
 import Constants
 from Constants import Stage, register
+from typing import Callable
 
 @register("Output")
 class OutputHighlight(Stage):
     name = "Highlight"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.updateFunction = updateFunction
         self.frame = frame
         self.textVar = tk.StringVar()

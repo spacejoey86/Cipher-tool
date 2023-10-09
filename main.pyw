@@ -123,14 +123,12 @@ def saveCom() -> None:
         pass
 
 def copyCom() -> None:
-    text: str = ""
-    for stage in stages:
-        text = stage.process(text)
+    text = getOutputText()
     root.clipboard_clear()
     root.clipboard_append(text)
     root.update()
 
-def changeFontSize(change) -> None:
+def changeFontSize(change: int) -> None:
     currentSize: int = int(right_text.cget("font").split(" ")[1])
     right_text.config(font=("Courier", currentSize + change))
     stages[0].textbox.config(font=("Courier", currentSize + change))

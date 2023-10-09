@@ -7,7 +7,7 @@ from typing import Callable
 @register("Text stage")
 class Capitalise(Stage):
     name = "Capitalise"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         super().__init__(frame, updateFunction)
     def decode(self, text: str) -> str:
         return text.upper()
@@ -27,7 +27,7 @@ class Swapcase(Stage):
 @register("Text stage")
 class Block(Stage):
     name = "Block text"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.updateFunction = updateFunction
         self.input_var = tk.IntVar(value=5)
         self.n_input = tk.Entry(frame, width=5, textvariable = self.input_var)

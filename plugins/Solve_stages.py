@@ -3,13 +3,13 @@ from tkinter import ttk
 import Constants
 from Constants import Stage, register
 import math #For ceiling function (round up)
-from typing import Generator
+from typing import Generator, Callable
 
 @register("Solve")
 class RailFence(Stage):
     name = "Rail fence"
 
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.variations: list[str] = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
         self.variation_selection = tk.StringVar(frame, "Write vertically, read horizontally")
         self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
@@ -106,7 +106,7 @@ class RailFence(Stage):
 @register("Solve")
 class Scytale(Stage):
     name = "Scytale"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.variations = ["Write vertically, read horizontally", "Write horizontally, read vertically"]
         self.variation_selection = tk.StringVar(frame, "Write vertically, read horizontally")
         self.option_menu = tk.OptionMenu(frame, self.variation_selection, *self.variations, command=lambda args : updateFunction())
@@ -195,7 +195,7 @@ class Scytale(Stage):
 class CaesarShift(Stage):
     name = "Caesar shift"
 
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.scale = tk.Scale(frame, from_=0,to=25,orient="horizontal",length=500,command=lambda idk:updateFunction())
         self.down_button = tk.Button(frame, text = " - ",command = lambda:self.scale.set(self.scale.get()-1))
         self.up_button = tk.Button(frame, text = " + ",command = lambda:self.scale.set(self.scale.get()+1))
@@ -254,7 +254,7 @@ class Morse(Stage):
 @register("Solve")
 class Substitution(Stage):
     name = "Substitution"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.substitutions: dict[str, str] = {}
         self.label_one = tk.Label(frame, text="Substitute")
         self.sub_entry_one = tk.Entry(frame, width=20)
@@ -321,7 +321,7 @@ class Substitution(Stage):
 @register("Solve")
 class Affine(Stage):
     name = "Affine"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.cycleButton = tk.Button(frame, text="Cycle",command=self.cycle)
         self.aLabel = tk.Label(frame, text="0")
         self.aScale = tk.Scale(frame,from_=1,to=12,orient="horizontal",length=300,command=self.update,showvalue=False)
@@ -367,7 +367,7 @@ class Affine(Stage):
 @register("Solve")
 class Vigenere(Stage):
     name = "Vigenere"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.keyVar = tk.StringVar()
         Constants.writeTrace(self.keyVar, lambda a,b,c : self.updateFunction())
         self.keyEntry = tk.Entry(frame,width=15, textvariable=self.keyVar)
@@ -418,7 +418,7 @@ class Vigenere(Stage):
 #@register("Solve")
 class Transposition(Stage): #this one is broken
     name = "Transposition"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.updateFunction = updateFunction
         self.col_from = 0
         self.tree = ttk.Treeview(frame, show='headings',selectmode="none", displaycolumns="#all",height=16)

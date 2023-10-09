@@ -1,12 +1,13 @@
 import tkinter as tk
 import Constants
 from Constants import Stage, register
+from typing import Callable
 
 @register("Analyse")
 class Length(Stage):
     name = "Length"
     output: tk.Label
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.frame = frame
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
@@ -20,7 +21,7 @@ class Length(Stage):
 class PlayfairDetect(Stage):
     name = "Detect Playfair"
     output: tk.Label
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.frame = frame
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
@@ -41,7 +42,7 @@ class PlayfairDetect(Stage):
 @register("Analyse")
 class IoC(Stage):
     name = "Index of Coincedence"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.updateFunction = updateFunction
         self.output_label = tk.Label(frame, text="")
     def display(self):
@@ -60,7 +61,7 @@ class IoC(Stage):
 @register("Analyse")
 class VigenereKeyword(Stage):
     name = "Vigenere keyword length"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.frame = frame
         self.updateFunction = updateFunction
         self.input_var = tk.StringVar(value="20")
@@ -102,7 +103,7 @@ class VigenereKeyword(Stage):
 class WordFinder(Stage):
     name = "Word Finder"
     output = None
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.frame = frame
         self.updateFunction = updateFunction
         self.input_var = tk.StringVar()
@@ -162,7 +163,7 @@ class WordFinder(Stage):
 class FrequencyAnalyse(Stage):
     name = "Frequency analysis"
     output: tk.Label
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.frame = frame
         self.updateFunction = updateFunction
         self.output = tk.Label(frame, text="")
@@ -181,7 +182,7 @@ class FrequencyAnalyse(Stage):
 @register("Analyse")
 class Doubles(Stage):
     name = "Bigram frequencies"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.frame = frame
         self.updateFunction = updateFunction
         self.frame2 = tk.Frame(frame)
@@ -211,7 +212,7 @@ class Doubles(Stage):
 @register("Analyse")
 class Triples(Stage):
     name = "Trigram frequencies"
-    def __init__(self, frame, updateFunction):
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]):
         self.frame = frame
         self.updateFunction = updateFunction
         self.frame2 = tk.Frame(frame)

@@ -50,13 +50,13 @@ class Input(Stage):
     menu = None
     textbox: tk.Text
 
-    def onModify(self, event: tk.Event) -> None:
+    def onModify(self, event: tk.Event[tk.Misc]) -> None:
         try:
             self.textbox.tk.call(self.textbox._w, 'edit', 'modified', 0)
         finally:
             self.updateFunction()
 
-    def __init__(self, frame, updateFunction) -> None:
+    def __init__(self, frame: tk.Frame, updateFunction: Callable[[], None]) -> None:
         self.updateFunction = updateFunction
         self.frame = frame
         self.textbox = tk.Text(frame)
