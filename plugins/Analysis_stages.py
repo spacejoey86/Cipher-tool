@@ -15,7 +15,7 @@ class Length(Stage):
     def decode(self, text):
         self.output.configure(text="Length = " + str(len(text)))
         return text
-    
+
 @register("Analyse")
 class PlayfairDetect(Stage):
     name = "Detect Playfair"
@@ -37,7 +37,7 @@ class PlayfairDetect(Stage):
         else:
             self.output.configure(text="Doubles not found, this could be a Playfair cipher")
         return text
-    
+
 @register("Analyse")
 class IoC(Stage):
     name = "Index of Coincedence"
@@ -56,7 +56,7 @@ class IoC(Stage):
             IoC = "Failed: length cannot be 0 or 1"
         self.output_label.configure(text="IoC = " + str(IoC))
         return text
-    
+
 @register("Analyse")
 class VigenereKeyword(Stage):
     name = "Vigenere keyword length"
@@ -97,7 +97,7 @@ class VigenereKeyword(Stage):
                 outputText += str(currentKey) + " : " + str(round(sum(tempIC) / len(tempIC), 3)) + "\n"
             self.output.configure(text=outputText)
         return text
-    
+
 @register("Analyse")
 class WordFinder(Stage):
     name = "Word Finder"
@@ -157,7 +157,7 @@ class WordFinder(Stage):
             output = ""
         self.output.configure(text=output)
         return text
-    
+
 @register("Analyse")
 class FrequencyAnalyse(Stage):
     name = "Frequency analysis"
@@ -177,7 +177,7 @@ class FrequencyAnalyse(Stage):
             output_text += letter + " = " + str(frequency[letter]) + "\n"
         self.output.configure(text=output_text)
         return text
-    
+
 @register("Analyse")
 class Doubles(Stage):
     name = "Bigram frequencies"
@@ -207,7 +207,7 @@ class Doubles(Stage):
             output_text += letter + " = " + str(frequency[letter]) + "\n"
         self.output.configure(text=output_text)
         return text
-    
+
 @register("Analyse")
 class Triples(Stage):
     name = "Trigram frequencies"

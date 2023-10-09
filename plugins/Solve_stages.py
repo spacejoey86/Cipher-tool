@@ -35,11 +35,11 @@ class RailFence(Stage):
         if self.key_length_string.get().isnumeric():
             self.rail_lengths = {}
             self.key_length = int(self.key_length_string.get())
-            
+
             # The text is a number of complete cycles, plus an extra length
             self.cycle_length = self.key_length * 2 - 2
             self.extra_length = len(text) % self.cycle_length
-            
+
             # Work out the length of the rails
             for rail_index in range(self.key_length): # This ignores the extra length
                 self.rail_lengths[rail_index] = (len(text) - self.extra_length) // (self.key_length - 1)
@@ -53,7 +53,7 @@ class RailFence(Stage):
     def write_horizontal(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
             output: str = ""
-            
+
             # Find the index of each letter in the ciphertext then add it to output
             for rail in range(self.key_length):
                 for index in range(self.rail_lengths[rail]):
@@ -71,7 +71,7 @@ class RailFence(Stage):
     def write_vertical(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
             output: str = ""
-            
+
             # Find the index of each letter in the ciphertext then add it to output
             counter = self.looping_counter(self.key_length)
             for i in range(len(text)):
@@ -98,7 +98,7 @@ class RailFence(Stage):
             return self.write_vertical(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
-        
+
 @register("Solve")
 class Scytale(Stage):
     name = "Scytale"
@@ -127,11 +127,11 @@ class Scytale(Stage):
         if self.key_length_string.get().isnumeric():
             self.line_lengths = {}
             self.key_length = int(self.key_length_string.get())
-            
+
             # The text is a number of complete cycles, plus an extra length
             self.cycle_length = self.key_length
             self.extra_length = len(text) % self.cycle_length
-            
+
             # Work out the length of the lines
             for line_index in range(self.key_length): # This ignores the extra length
                 self.line_lengths[line_index] = (len(text) - self.extra_length) // (self.key_length)
@@ -143,7 +143,7 @@ class Scytale(Stage):
     def write_horizontal(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
             output: str = ""
-            
+
             # Find the index of each letter in the ciphertext then add it to output
             counter = self.looping_counter(self.key_length)
             for line in range(self.key_length):
@@ -152,11 +152,11 @@ class Scytale(Stage):
                     output += text[letter_index]
             text = output
         return text
-    
+
     def write_vertical(self, text: str) -> str:
         if self.key_length_string.get().isnumeric():
             output: str = ""
-            
+
             # Find the index of each letter in the ciphertext then add it to output
             counter = self.looping_counter(self.key_length)
             for i in range(len(text)):
@@ -168,21 +168,21 @@ class Scytale(Stage):
                 output += text[letter_index]
             text = output
         return text
-    
+
     def decode(self, text):
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_horizontal(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_vertical(text)
-        
+
     def encode(self, text):
         self.update_variables(text)
         if self.variation_selection.get() == "Write horizontally, read vertically":
             return self.write_vertical(text)
         elif self.variation_selection.get() == "Write vertically, read horizontally":
             return self.write_horizontal(text)
-        
+
 @register("Solve")
 class CaesarShift(Stage):
     name = "Caesar shift"
@@ -208,7 +208,7 @@ class CaesarShift(Stage):
             else:
                 shifted += letter
         return shifted
-    
+
     def decode(self, text):
         shifted: str = ""
         for letter in text:
@@ -217,7 +217,7 @@ class CaesarShift(Stage):
             else:
                 shifted += letter
         return shifted
-    
+
 @register("Solve")
 class Morse(Stage):
     name = "Morse code"
@@ -242,7 +242,7 @@ class Morse(Stage):
         return output_text
     def encode(self, text):
         return " ".join([self.morse_encode[letter.upper()] if letter != letter.upper and letter.upper() in Constants.alphabet else letter for letter in text])
-    
+
 @register("Solve")
 class Substitution(Stage):
     name = "Substitution"
@@ -355,7 +355,7 @@ class Affine(Stage):
             rNum = Constants.alphabet[((self.ia*(lNum-self.b))%26)].lower()
             text = text.replace(letter,rNum)
         return text
-    
+
 @register("Solve")
 class Vigenere(Stage):
     name = "Vigenere"
@@ -406,7 +406,7 @@ class Vigenere(Stage):
             else:
                 output_text += letter
         return output_text
-    
+
 #@register("Solve")
 class Transposition(Stage): #this one is broken
     name = "Transposition"
@@ -422,13 +422,13 @@ class Transposition(Stage): #this one is broken
         self.keyEntry = tk.Entry(frame,width=5, textvariable=self.keyVar)
         self.keyEntry.insert(0,"5")
         self.tree.configure(yscrollcommand = self.scroll.set)
-        
+
         self.inputVar = tk.IntVar()
         self.inLabel = tk.Label(frame, text="In:")
         self.inCol = tk.Radiobutton(frame, text="Columns", variable=self.inputVar,value=1,command=updateFunction)
         self.inRow = tk.Radiobutton(frame, text="Rows", variable=self.inputVar,value=-1,command=updateFunction)
         self.inputVar.set(1)
-        
+
         self.outputVar = tk.IntVar()
         self.outLabel = tk.Label(frame, text="Out:")
         self.outCol = tk.Radiobutton(frame, text="Columns", variable=self.outputVar,value=1,command=updateFunction)
@@ -437,7 +437,7 @@ class Transposition(Stage): #this one is broken
         self.prevtext = ""
         self.prevInput = 1
         self.prevOutput = 1
-        
+
     def display(self):
         self.keyLabel.grid(row=0,column=0)
         self.keyEntry.grid(row=0,column=1)
@@ -512,20 +512,20 @@ class Transposition(Stage): #this one is broken
             self.prevtext = text
             self.prevOutput = self.outputVar.get()
             self.prevInput = self.inputVar.get()
-            
+
         dcols = list(self.tree["displaycolumns"])
         if dcols[0] == "#all":
             dcols = list(self.tree["columns"])
         #print(dcols)
         self.outputText = ""
-    
+
         if self.ouputVar.get() == 1 and self.inputVar.get() == 1:#col to col
             smallColLen = math.floor(len(text)/self.cols)#length of the smaller columns
             bigCols = len(text) - 1 - (smallColLen*self.cols)#number of columns which are bigger
             for col in dcols:
                 for row in range(math.ceil(len(text)/self.cols)):
                     self.outputText += text[col*smallColLen+row]
-            
+
         if self.outputVar.get() == 1:
             #col to col:
             smallColLen = math.floor(len(text)/self.cols)#length of the smaller columns
@@ -548,7 +548,7 @@ class Transposition(Stage): #this one is broken
                     if row*self.cols+int(col) < len(text):
                         self.outputText += text[row*self.cols+int(col)]
         return self.outputText
-        
+
     def reload(self, text):#Puts the text in the tree, and the drag tree. This resets the column order too
         self.tree["displaycolumns"] = "#all"
         self.visual_drag["displaycolumns"] = "#all"
@@ -559,7 +559,7 @@ class Transposition(Stage): #this one is broken
             columns.append(str(cnum))
         self.tree.configure(columns=columns)
         self.visual_drag.configure(columns=columns)
-        
+
         for col in columns:
             self.tree.heading(col, text=col)
             self.tree.column(col, width=25,stretch=False)

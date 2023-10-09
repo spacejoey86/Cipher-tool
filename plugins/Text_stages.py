@@ -4,7 +4,6 @@ from Constants import Stage, register
 from typing import Callable
 
 
-    
 @register("Text stage")
 class Capitalise(Stage):
     name = "Capitalise"
@@ -18,13 +17,13 @@ class Lowercase(Stage):
     name = "Lower Case"
     def decode(self, text):
         return text.lower()
-    
+
 @register("Text stage")
 class Swapcase(Stage):
     name = "Swap case"
     def decode(self, text):
         return text.swapcase()
-    
+
 @register("Text stage")
 class Block(Stage):
     name = "Block text"
@@ -49,7 +48,7 @@ class Strip(Stage):
             if character.upper() in Constants.alphabet or character == " ":
                 stripped += character
         return stripped
-    
+
 @register("Text stage")
 class RemoveSpaces(Stage):
     name = "Remove Spaces"
@@ -59,7 +58,7 @@ class RemoveSpaces(Stage):
             if character != " ":
                 removed += character
         return removed
-    
+
 @register("Text stage")
 class Reverse(Stage):
     name = "Reverse"

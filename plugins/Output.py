@@ -31,7 +31,7 @@ class OutputHighlight(Stage):
             textRef.tag_add("highlight", pos, index2)
     def display(self):
         self.textBox.grid()
-        
+
 @register("Output")
 class Blank(Stage):
     name = "Blank"

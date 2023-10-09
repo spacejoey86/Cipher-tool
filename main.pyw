@@ -81,7 +81,7 @@ def updateStagesFrame() -> None:
         stage.check_var = tk.BooleanVar()
         stage.check_var.set(True)
         stage.checkbox = tk.Checkbutton(stages_frame, variable = stage.check_var, command=updateOutputText, takefocus=0)
-        
+
         if stage_index == 0: #Input cannot be disabled, so don't show the checkbox
             stage.checkbox.config(state="disabled")
         stage.button.grid(column=1, row=stage_index)
@@ -91,7 +91,7 @@ def add(menu, StageClass) -> None: #Helper function to make adding stages neater
     menu.add_command(label= StageClass.name,#Takes the name from the class
                      command=lambda:addStage(StageClass(stage_editor, #passes the stage editor frame to draw to
                                                         updateOutputText))) #and a callback for when things change and the output text needs updating
-    
+
 #Functions for file menu operations:
 def openCom() -> None:
     text: str = ""
