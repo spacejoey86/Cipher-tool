@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
+import os
 
 from Constants import menus, Input, Stage
 from plugins import *
@@ -136,7 +137,8 @@ def changeFontSize(change) -> None:
 root = tk.Tk()
 root.title("Cipher program")
 root.geometry("1500x500")
-root.state("zoomed") #apparently windows only
+if os.name == "nt":
+    root.state("zoomed") #apparently windows only
 
 stage_editor: tk.Frame = tk.Frame(root, width=10, height=10) #Size is the same as right_text, they will expand equally to fill the space
 stage_editor.grid(row=0, column=0, rowspan=4, sticky="NESW")
