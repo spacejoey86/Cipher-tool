@@ -17,7 +17,7 @@ def writeTrace(variable: tk.Variable, callback: Callable[[Any, Any, Any], Any]) 
 
 
 def register(menu: str):
-    def wrap(stage_class):
+    def wrap(stage_class: Type[Stage]):
         if menu not in menus.keys():
             menus[menu] = []
         menus[menu].append(stage_class)
@@ -50,7 +50,7 @@ class Input(Stage):
     menu = None
     textbox: tk.Text
 
-    def onModify(self, event: tk.Event[tk.Misc]) -> None:
+    def onModify(self, _) -> None:
         try:
             self.textbox.tk.call(self.textbox._w, 'edit', 'modified', 0)
         finally:

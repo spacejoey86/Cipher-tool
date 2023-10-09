@@ -149,7 +149,6 @@ class Scytale(Stage):
             output: str = ""
 
             # Find the index of each letter in the ciphertext then add it to output
-            counter = self.looping_counter(self.key_length)
             for line in range(self.key_length):
                 for index in range(self.line_lengths[line]):
                     letter_index = index * self.key_length + line

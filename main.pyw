@@ -170,7 +170,7 @@ root.bind("<Control-Next>", stageSelectDown)    #Control + page down
 
 right_text: tk.Text = tk.Text(root, takefocus=0, width=10, height=10, font=("Courier", 10))
 right_text.grid(row=0, column=4, rowspan=4, sticky="NESW")
-right_text.grid_propagate(0)
+right_text.grid_propagate(False)
 right_text.tag_configure("highlight", foreground = "red")
 
 tk.Grid.columnconfigure(root, 0, weight=1)
